@@ -67,7 +67,12 @@ export function ScheduleSection({
                       ...day,
                       items: [
                         ...day.items,
-                        { time: "", title: "", description: "" },
+                        {
+                          timestart: "",
+                          timeend: "",
+                          title: "",
+                          description: "",
+                        },
                       ],
                     }
                   : day
@@ -108,7 +113,9 @@ export function ScheduleSection({
           {event.schedule.map((day, dayIndex) => (
             <div key={dayIndex} className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold">Day {dayIndex + 1}</h3>
+                <h3 className="text-xl font-bold">
+                  Day {dayIndex + 1} ({day.date})
+                </h3>
                 {editMode && (
                   <div>
                     <Button
@@ -130,14 +137,10 @@ export function ScheduleSection({
               </div>
               {editMode && (
                 <Input
+                  id={`day-${dayIndex}`}
                   type="date"
                   value={day.date}
-                  onChange={(e) =>
-                    handleDateChange(
-                      e.target.value,
-                      `schedule[${dayIndex}].date`
-                    )
-                  }
+                  onChange={(e) => handleDateChange(dayIndex, e.target.value)}
                   className="mb-4"
                 />
               )}
@@ -145,62 +148,81 @@ export function ScheduleSection({
                 <div key={itemIndex} className="mb-4">
                   {editMode ? (
                     <>
-                      <div className="flex items-center mb-2">
+                      <div className="p-4 mb-6 border rounded">
+                        <div className="flex items-center mb-2">
+                          <Input
+                            type="timestart"
+                            value={item.timestart}
+                            onChange={(e) =>
+                              handleScheduleChange(
+                                dayIndex,
+                                itemIndex,
+                                "timestart",
+                                e.target.value
+                              )
+                            }
+                            className="w-1/4 mr-2"
+                            placeholder="Time"
+                          />
+                          <Input
+                            type="timeend"
+                            value={item.timeend}
+                            onChange={(e) =>
+                              handleScheduleChange(
+                                dayIndex,
+                                itemIndex,
+                                "timeend",
+                                e.target.value
+                              )
+                            }
+                            className="w-1/4 mr-2"
+                            placeholder="Time"
+                          />
+                          <Input
+                            value={item.title}
+                            onChange={(e) =>
+                              handleScheduleChange(
+                                dayIndex,
+                                itemIndex,
+                                "title",
+                                e.target.value
+                              )
+                            }
+                            className="w-3/4"
+                            placeholder="Event Title"
+                          />
+                          <Button
+                            onClick={() =>
+                              removeScheduleItem(dayIndex, itemIndex)
+                            }
+                            size="sm"
+                            variant="destructive"
+                            className="ml-2"
+                          >
+                            <Minus size={16} />
+                          </Button>
+                        </div>
                         <Input
-                          value={item.time}
+                          value={item.description}
                           onChange={(e) =>
                             handleScheduleChange(
                               dayIndex,
                               itemIndex,
-                              "time",
+                              "description",
                               e.target.value
                             )
                           }
-                          className="w-1/4 mr-2"
-                          placeholder="Time"
+                          placeholder="Perfomers/Speakers"
                         />
-                        <Input
-                          value={item.title}
-                          onChange={(e) =>
-                            handleScheduleChange(
-                              dayIndex,
-                              itemIndex,
-                              "title",
-                              e.target.value
-                            )
-                          }
-                          className="w-3/4"
-                          placeholder="Title"
-                        />
-                        <Button
-                          onClick={() =>
-                            removeScheduleItem(dayIndex, itemIndex)
-                          }
-                          size="sm"
-                          variant="destructive"
-                          className="ml-2"
-                        >
-                          <Minus size={16} />
-                        </Button>
                       </div>
-                      <Textarea
-                        value={item.description}
-                        onChange={(e) =>
-                          handleScheduleChange(
-                            dayIndex,
-                            itemIndex,
-                            "description",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Description"
-                      />
                     </>
                   ) : (
                     <>
                       <div className="flex items-center mb-2">
                         <Clock className="mr-2" size={16} />
-                        <span className="font-semibold">{item.time}</span>
+                        <span className="font-semibold">
+                          {item.timestart} - {item.timeend}
+                        </span>
                       </div>
                       <h4 className="font-bold">{item.title}</h4>
                       <p>{item.description}</p>

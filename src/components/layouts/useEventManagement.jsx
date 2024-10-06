@@ -45,10 +45,17 @@ export function useEventManagement() {
     }
   };
 
-  const handleDateChange = (date, field) => {
+  const handleDateChange = (dayIndex, value) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
-        event.id === selectedEventId ? { ...event, [field]: date } : event
+        event.id === selectedEventId
+          ? {
+              ...event,
+              schedule: event.schedule.map((day, index) =>
+                index === dayIndex ? { ...day, date: value } : day
+              ),
+            }
+          : event
       )
     );
   };

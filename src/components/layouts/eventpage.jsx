@@ -34,7 +34,7 @@ export function EventPage() {
 
   return (
     <div className="container px-4 py-8 mx-auto">
-      {/* Event Selection Dropdown */}
+      {/* Event Selection Dropdown
       <div className="mb-8">
         <Select value={selectedEventId} onValueChange={handleEventChange}>
           <SelectTrigger className="w-full">
@@ -48,7 +48,7 @@ export function EventPage() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
 
       <HeroSection
         event={selectedEvent}
