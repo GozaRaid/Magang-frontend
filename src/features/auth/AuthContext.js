@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
     } else {
       logout(route);
+      setIsLoggedIn(false);
     }
   };
 
