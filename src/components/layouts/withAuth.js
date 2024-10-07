@@ -19,7 +19,7 @@ export function withAuth(Component) {
     useEffect(() => {
       // Ensure that it redirects only when loading is false and user is not logged in
       if (!loading && !isLoggedIn) {
-        router.push("/");
+        router.push("/exceptions/unauthorized");
       }
     }, [isLoggedIn, loading, router]); // Add loading as a dependency to avoid premature redirect
 

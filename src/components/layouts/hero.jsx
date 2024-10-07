@@ -35,12 +35,13 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="flex items-center justify-center w-full min-h-screen text-center bg-gradient-to-r from-primary to-secondary">
-      <div className="container flex flex-col items-center justify-center px-4 text-center md:px-6">
-        <div className="space-y-4 lg:mx-40">
-          <h1 className="text-4xl font-bold tracking-tighter text-primary-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-            The International Conference on Data Science and Its Applications
-            2024
+    <section className="relative flex items-center justify-center w-full min-h-screen text-center bg-cover bg-center bg-[url('/ancient-pura.jpg')]">
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(67,73,131,0.70)_10%,rgba(62,97,146,0.70)_30%,rgba(53,135,168,0.70)_52%,rgba(51,166,177,0.70)_75%,rgba(51,166,177,0.70)_89%)]"></div>
+      <div className="container relative z-10 flex flex-col items-center justify-center px-4 text-center md:px-6">
+        <div className="space-y-4 lg:mx-10">
+          <h1 className="text-4xl font-bold text-primary-foreground sm:text-5xl md:text-6xl lg:text-7xl">
+            The 7th International Conference on Data Science and Its
+            Applications
           </h1>
           <p className=" text-primary-foreground/80 md:text-xl">
             Bandung, December 31, 2024

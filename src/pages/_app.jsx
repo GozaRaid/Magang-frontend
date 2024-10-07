@@ -1,10 +1,11 @@
 import "@/styles/globals.css";
-import { NavbarComponent } from "@/components/layouts/navbar";
+import Head from "next/head";
+import { Navbar } from "@/components/layouts/navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Inter } from "next/font/google";
-import Head from "next/head";
 import { AuthProvider } from "@/features/auth/AuthContext";
 import { useRouter } from "next/router";
+import { Footer } from "@/components/layouts/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 const queryClient = new QueryClient({
@@ -24,7 +25,7 @@ export default function App({ Component, pageProps }) {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Head>
-            <title>ICoDSA 20** | Telkom University </title>
+            <title>ICoDSA 2024 | Telkom University </title>
             <meta name="description" content="ICoDSA" />
             <meta
               name="viewport"
@@ -33,10 +34,11 @@ export default function App({ Component, pageProps }) {
             <link rel="icon" href="/logo-icodsa-favicon.png" />
           </Head>
           <div className="flex flex-col min-h-screen">
-            {!noNavbarFooter.includes(router.pathname) && <NavbarComponent />}
+            {!noNavbarFooter.includes(router.pathname) && <Navbar />}
             <main className={`flex-grow ${inter.className}`}>
               <Component {...pageProps} />
             </main>
+            {!noNavbarFooter.includes(router.pathname) && <Footer />}
           </div>
         </AuthProvider>
       </QueryClientProvider>

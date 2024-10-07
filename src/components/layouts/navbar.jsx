@@ -1,42 +1,120 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const navItems = [
-  { name: "Home", href: "#hero" },
+  { name: "Home", href: "/" },
   { name: "About", href: "#about" },
-  { name: "Schedule", href: "#schedule" },
-  { name: "Speakers", href: "#speakers" },
+  {
+    name: "Speakers",
+    href: "#speakers",
+    dropdown: [
+      { name: "Keynote Speakers", href: "#keynote" },
+      { name: "Tutorial Sessions", href: "#tutorial" },
+    ],
+  },
+  { name: "Schedule", href: "/schedule" },
   { name: "Location", href: "#location" },
 ];
 
-export function NavbarComponent() {
+export function Navbar() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleClick = (href) => {
-    setIsOpen(false);
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    if (href.startsWith("#")) {
+      const targetSection = href.substring(1);
+      const scrollToElement = () => {
+        const element = document.getElementById(targetSection);
+        if (element) {
+          const navbarHeight = document.querySelector("header").offsetHeight;
+          const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({
+            top: elementPosition - navbarHeight,
+            behavior: "smooth",
+          });
+        }
+      };
+
+      if (router.pathname !== "/") {
+        router.push("/");
+        router.events.on("routeChangeComplete", scrollToElement);
+      } else {
+        scrollToElement();
+      }
+    } else {
+      setIsOpen(false);
+      router.push(href);
     }
   };
 
+  const NavLink = ({ item }) => (
+    <div className="relative group" ref={item.dropdown ? dropdownRef : null}>
+      {item.dropdown ? (
+        <>
+          <button
+            className="flex items-center font-medium transition-colors text-md hover:text-primary"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            {item.name}
+            <ChevronDown className="w-4 h-4 ml-1" />
+          </button>
+          {dropdownOpen && (
+            <div className="absolute left-0 z-50 py-2 text-black bg-white rounded-md shadow-lg top-full">
+              {item.dropdown.map((subItem) => (
+                <Link
+                  key={subItem.name}
+                  href={subItem.href}
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleClick(subItem.href);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  {subItem.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <Link
+          href={item.href}
+          className="relative inline-block font-medium transition-colors text-md hover:text-primary"
+          onClick={(e) => {
+            e.preventDefault();
+            handleClick(item.href);
+          }}
+        >
+          {item.name}
+          <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full"></span>
+        </Link>
+      )}
+    </div>
+  );
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-[rgba(7,112,134,1)] via-[rgba(60,104,150,1)] to-[rgba(8,221,206,1)]">
+    <header className="sticky top-0 border-1 z-40 w-full bg-[linear-gradient(90deg,rgba(67,73,131,1)_10%,rgba(62,97,146,1)_30%,rgba(53,135,168,1)_52%,rgba(51,166,177,1)_75%,rgba(51,166,177,1)_89%)]">
       <div className="container flex items-center justify-between h-20 mx-auto">
         <Link href="/" passHref>
           <Image
@@ -48,17 +126,7 @@ export function NavbarComponent() {
         </Link>
         <nav className="hidden gap-6 text-white md:flex">
           {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="font-medium transition-colors text-md hover:text-primary"
-              onClick={(e) => {
-                e.preventDefault();
-                handleClick(item.href);
-              }}
-            >
-              {item.name}
-            </Link>
+            <NavLink key={item.name} item={item} />
           ))}
         </nav>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -68,20 +136,10 @@ export function NavbarComponent() {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px] ">
+          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <nav className="flex flex-col gap-4">
               {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="font-medium transition-colors text-md hover:text-primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleClick(item.href);
-                  }}
-                >
-                  {item.name}
-                </Link>
+                <NavLink key={item.name} item={item} />
               ))}
             </nav>
           </SheetContent>
