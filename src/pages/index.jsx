@@ -1,6 +1,8 @@
 import { Hero } from "@/components/layouts/hero";
 import { About } from "@/components/layouts/about";
 import { Speakers } from "@/components/layouts/speakers";
+import { EventSchedule } from "@/components/layouts/eventschedule";
+import { LocationNavigation } from "@/components/layouts/locationnavigation";
 
 export default function Home() {
   return (
@@ -8,6 +10,8 @@ export default function Home() {
       <Hero />
       <About />
       <Speakers />
+      <EventSchedule />
+      <LocationNavigation />
     </div>
   );
 }

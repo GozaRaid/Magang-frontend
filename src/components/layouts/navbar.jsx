@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 
 const navItems = [
-  { name: "Home", href: "/" },
+  { name: "Home", href: "#hero" },
   { name: "About", href: "#about" },
   {
     name: "Speakers",
@@ -42,6 +42,7 @@ export function Navbar() {
   const handleClick = (href) => {
     if (href.startsWith("#")) {
       const targetSection = href.substring(1);
+
       const scrollToElement = () => {
         const element = document.getElementById(targetSection);
         if (element) {
@@ -55,11 +56,18 @@ export function Navbar() {
         }
       };
 
-      if (router.pathname !== "/") {
-        router.push("/");
-        router.events.on("routeChangeComplete", scrollToElement);
-      } else {
+      // If already on the root ("/"), just scroll to the section
+      if (router.pathname === "/") {
         scrollToElement();
+      } else {
+        // If on a different path, navigate to root and then scroll
+        const onRouteChangeComplete = () => {
+          scrollToElement();
+          router.events.off("routeChangeComplete", onRouteChangeComplete); // Clean up event listener
+        };
+        router.push("/").then(() => {
+          router.events.on("routeChangeComplete", onRouteChangeComplete);
+        });
       }
     } else {
       setIsOpen(false);
@@ -116,7 +124,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 border-1 z-40 w-full bg-[linear-gradient(90deg,rgba(67,73,131,1)_10%,rgba(62,97,146,1)_30%,rgba(53,135,168,1)_52%,rgba(51,166,177,1)_75%,rgba(51,166,177,1)_89%)]">
       <div className="container flex items-center justify-between h-20 mx-auto">
-        <Link href="/" passHref>
+        <Link href="#hero" passHref>
           <Image
             src="/logo-icodsa.png"
             alt="ICoDSA Logo"

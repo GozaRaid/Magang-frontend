@@ -35,7 +35,10 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative flex items-center justify-center w-full min-h-screen text-center bg-cover bg-center bg-[url('/ancient-pura.jpg')]">
+    <section
+      id="hero"
+      className="relative flex items-center justify-center w-full min-h-screen text-center bg-cover bg-center bg-[url('/ancient-pura.jpg')]"
+    >
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(67,73,131,0.70)_10%,rgba(62,97,146,0.70)_30%,rgba(53,135,168,0.70)_52%,rgba(51,166,177,0.70)_75%,rgba(51,166,177,0.70)_89%)]"></div>
       <div className="container relative z-10 flex flex-col items-center justify-center px-4 text-center md:px-6">
         <div className="space-y-4 lg:mx-10">
@@ -71,5 +74,26 @@ export function Hero() {
         </div>
       </div>
     </section>
+
+    // <div className="w-full overflow-hidden border-0">
+    //   <div className="relative">
+    //       <h1 className="mb-16 text-4xl font-bold" >
+    //         Location Navigation
+    //       </h1>
+    //   </div>
+    //   <div className="p-0">
+    //       <div className="aspect-[21/9] w-full">
+    //         <iframe
+    //             src={mapUrl}
+    //             width="100%"
+    //             height="100%"
+    //             style={{ border: 0 }}
+    //             allowFullScreen
+    //             loading="lazy"
+    //             referrerPolicy="no-referrer-when-downgrade"
+    //           />
+    //       </div>
+    //   </div>
+    // </div>
   );
 }

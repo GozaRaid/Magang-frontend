@@ -84,22 +84,22 @@ function TutorialSpeaker() {
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           onClick={closeModal}
         >
-          <div className="relative">
+          <div className="relative max-w-full max-h-full">
             <Image
               src="/tutoriall.png"
               alt="Tutorial Session"
               width={1200}
               height={600}
-              className="rounded-lg"
+              className="object-contain max-w-full max-h-full rounded-lg"
             />
             <button
               onClick={closeModal}
               className="absolute p-4 text-xl text-white rounded-full top-1 right-2"
             >
-              &times; {/* Close icon */}
+              &times;
             </button>
           </div>
         </div>
