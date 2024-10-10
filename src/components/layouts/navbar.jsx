@@ -2,24 +2,30 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Menu, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
 const navItems = [
-  { name: "Home", href: "#hero" },
-  { name: "About", href: "#about" },
+  { name: "Home", href: "/#hero" },
+  { name: "About", href: "/#about" },
   {
     name: "Speakers",
     href: "#speakers",
     dropdown: [
-      { name: "Keynote Speakers", href: "#keynote" },
-      { name: "Tutorial Sessions", href: "#tutorial" },
+      { name: "Keynote Speakers", href: "/#keynote" },
+      { name: "Tutorial Sessions", href: "/#tutorial" },
     ],
   },
   { name: "Schedule", href: "/schedule" },
-  { name: "Location", href: "#location" },
+  { name: "Location", href: "/#location" },
 ];
 
 export function Navbar() {
@@ -40,8 +46,8 @@ export function Navbar() {
   }, []);
 
   const handleClick = (href) => {
-    if (href.startsWith("#")) {
-      const targetSection = href.substring(1);
+    if (href.startsWith("/#")) {
+      const targetSection = href.substring(2);
 
       const scrollToElement = () => {
         const element = document.getElementById(targetSection);
@@ -86,6 +92,7 @@ export function Navbar() {
             {item.name}
             <ChevronDown className="w-4 h-4 ml-1" />
           </button>
+          <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full"></span>
           {dropdownOpen && (
             <div className="absolute left-0 z-50 py-2 text-black bg-white rounded-md shadow-lg top-full">
               {item.dropdown.map((subItem) => (
@@ -124,7 +131,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 border-1 z-40 w-full bg-[linear-gradient(90deg,rgba(67,73,131,1)_10%,rgba(62,97,146,1)_30%,rgba(53,135,168,1)_52%,rgba(51,166,177,1)_75%,rgba(51,166,177,1)_89%)]">
       <div className="container flex items-center justify-between h-20 mx-auto">
-        <Link href="#hero" passHref>
+        <Link href="/#hero">
           <Image
             src="/logo-icodsa.png"
             alt="ICoDSA Logo"
@@ -138,6 +145,9 @@ export function Navbar() {
           ))}
         </nav>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          {/* NOTE: Title & Desc required for the upper Sheet component */}
+          <SheetTitle className="hidden" />
+          <SheetDescription className="hidden" />
           <SheetTrigger asChild className="md:hidden">
             <Button variant="ghost" size="icon">
               <Menu className="w-6 h-6 text-white" />

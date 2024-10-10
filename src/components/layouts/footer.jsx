@@ -28,7 +28,6 @@ export function Footer() {
                 <Image
                   src="/logo-telu.png"
                   alt="Telkom University Logo"
-                  layout="responsive"
                   width={120}
                   height={40}
                 />
@@ -37,7 +36,6 @@ export function Footer() {
                 <Image
                   src="/logo-utm.png"
                   alt="UTM Logo"
-                  layout="responsive"
                   width={120}
                   height={40}
                 />
@@ -46,7 +44,6 @@ export function Footer() {
                 <Image
                   src="/UBI.png"
                   alt="Other Organization Logo"
-                  layout="responsive"
                   width={80}
                   height={40}
                 />
