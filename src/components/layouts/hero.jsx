@@ -74,26 +74,5 @@ export function Hero() {
         </div>
       </div>
     </section>
-
-    // <div className="w-full overflow-hidden border-0">
-    //   <div className="relative">
-    //       <h1 className="mb-16 text-4xl font-bold" >
-    //         Location Navigation
-    //       </h1>
-    //   </div>
-    //   <div className="p-0">
-    //       <div className="aspect-[21/9] w-full">
-    //         <iframe
-    //             src={mapUrl}
-    //             width="100%"
-    //             height="100%"
-    //             style={{ border: 0 }}
-    //             allowFullScreen
-    //             loading="lazy"
-    //             referrerPolicy="no-referrer-when-downgrade"
-    //           />
-    //       </div>
-    //   </div>
-    // </div>
   );
 }

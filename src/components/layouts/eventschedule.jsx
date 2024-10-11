@@ -202,7 +202,7 @@ export function EventSchedule() {
               <TabsTrigger
                 key={day.date}
                 value={day.date}
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-[linear-gradient(90deg,rgba(67,73,131,1)_10%,rgba(62,97,146,1)_30%,rgba(53,135,168,1)_52%,rgba(51,166,177,1)_75%,rgba(51,166,177,1)_89%)] data-[state=active]:text-primary-foreground "
               >
                 {new Date(day.date).toLocaleDateString("en-US", {
                   weekday: "short",
@@ -228,10 +228,10 @@ export function EventSchedule() {
           <TabsContent key={day.date} value={day.date}>
             <Table>
               <TableHeader>
-                <TableRow className="bg-primary text-primary-foreground">
-                  <TableHead className="w-1/6">Time</TableHead>
-                  <TableHead className="w-1/4">Event</TableHead>
-                  <TableHead className="w-1/2">Speakers</TableHead>
+                <TableRow className="bg-blue-950">
+                  <TableHead className="w-1/6 text-white">Time</TableHead>
+                  <TableHead className="w-1/4 text-white">Event</TableHead>
+                  <TableHead className="w-1/2 text-white">Speakers</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

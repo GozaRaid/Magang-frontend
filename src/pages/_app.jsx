@@ -18,7 +18,11 @@ const queryClient = new QueryClient({
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
-  const noNavbarFooter = ["/admin/auth/login", "/exceptions/unauthorized"];
+  const noNavbarFooter = [
+    "/admin/auth/login",
+    "/admin/auth/register",
+    "/exceptions/unauthorized",
+  ];
 
   return (
     <>
