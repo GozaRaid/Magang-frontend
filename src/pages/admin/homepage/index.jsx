@@ -1,8 +1,8 @@
 import { EventPage } from "@/components/layouts/eventpage";
 import { withAuth } from "@/components/layouts/withAuth";
 
-function AdminHomepage() {
+export default function AdminHomepage() {
   return <EventPage />;
 }
 
-export default withAuth(AdminHomepage);
+// export default withAuth(AdminHomepage);

@@ -86,13 +86,13 @@ export function Navbar() {
       {item.dropdown ? (
         <>
           <button
-            className="flex items-center font-medium transition-colors text-md hover:text-primary"
+            className="flex items-center font-medium transition-colors text-md"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
             {item.name}
             <ChevronDown className="w-4 h-4 ml-1" />
           </button>
-          <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full"></span>
+          <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full"></span>
           {dropdownOpen && (
             <div className="absolute left-0 z-50 py-2 text-black bg-white rounded-md shadow-lg top-full">
               {item.dropdown.map((subItem) => (
@@ -115,14 +115,14 @@ export function Navbar() {
       ) : (
         <Link
           href={item.href}
-          className="relative inline-block font-medium transition-colors text-md hover:text-primary"
+          className="relative inline-block font-medium transition-colors text-md"
           onClick={(e) => {
             e.preventDefault();
             handleClick(item.href);
           }}
         >
           {item.name}
-          <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full"></span>
+          <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-300 ease-out transform -translate-x-1/2 group-hover:w-full"></span>
         </Link>
       )}
     </div>
