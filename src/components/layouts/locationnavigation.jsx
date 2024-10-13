@@ -1,7 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 export function LocationNavigation() {
   const mapUrl =
     "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d829.0235262254835!2d115.16517819578816!3d-8.736788974631034!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd25b478fa53ef9%3A0xf85ed5e4cbe5222b!2sASTON%20Kuta%20Hotel%20%26%20Residence!5e0!3m2!1sen!2sid!4v1728494050618!5m2!1sen!2sid";

@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }) {
     "/admin/auth/login",
     "/admin/auth/register",
     "/exceptions/unauthorized",
+    "/admin/dashboard",
   ];
 
   return (
