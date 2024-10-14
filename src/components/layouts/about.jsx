@@ -49,7 +49,7 @@ export function About() {
               <MapPin className="flex-shrink-0 w-8 h-8 mr-4 text-cyan-800" />
               <div>
                 <h2 className="text-xl font-bold">Where</h2>
-                <p>Universitas Bali Internasional</p>
+                <p>Telkom University</p>
               </div>
             </div>
             <div className="flex items-start">

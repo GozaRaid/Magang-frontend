@@ -13,6 +13,8 @@ import {
   Save,
   Trash2,
   Edit2,
+  LogOut,
+  ExternalLink,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -47,7 +49,7 @@ export function Dashboard() {
   const [activeSection, setActiveSection] = useState("home");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [nextSection, setNextSection] = useState(null); // Renamed for clarity
+  const [nextSection, setNextSection] = useState(null);
 
   const sections = [
     { name: "Home", icon: Home, component: HeroSection },
@@ -60,7 +62,6 @@ export function Dashboard() {
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
 
   const handleKeepChanges = () => {
-    // Save changes based on editMode
     editMode ? handleSave() : handleDiscardChanges();
     setActiveSection(nextSection);
     setIsAlertOpen(false);
@@ -75,11 +76,21 @@ export function Dashboard() {
 
   const handleSectionChange = (section) => {
     if (editMode) {
-      setNextSection(section); // Use new variable name for clarity
+      setNextSection(section);
       setIsAlertOpen(true);
     } else {
       setActiveSection(section);
     }
+  };
+
+  const handleLogout = () => {
+    // Implement logout logic here
+    console.log("Logging out...");
+  };
+
+  const handleGoToHomepage = () => {
+    // Implement navigation to homepage here
+    console.log("Navigating to homepage...");
   };
 
   const ActiveSectionComponent = sections.find(
@@ -90,7 +101,7 @@ export function Dashboard() {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div
-        className={`bg-white shadow-md transition-all duration-300 ${
+        className={`bg-white shadow-md transition-all duration-300 flex flex-col ${
           isSidebarCollapsed ? "w-16" : "w-64"
         }`}
       >
@@ -115,7 +126,7 @@ export function Dashboard() {
             )}
           </Button>
         </div>
-        <nav className="mt-8">
+        <nav className="flex-grow mt-8">
           {sections.map((section) => (
             <Button
               key={section.name.toLowerCase()}
@@ -136,6 +147,32 @@ export function Dashboard() {
             </Button>
           ))}
         </nav>
+        <div className="p-4 mt-auto">
+          <Button
+            variant="outline"
+            onClick={handleGoToHomepage}
+            className={`w-full justify-start mb-2 ${
+              isSidebarCollapsed ? "px-0 justify-center" : "px-4"
+            }`}
+          >
+            <ExternalLink
+              className={`h-5 w-5 ${isSidebarCollapsed ? "mr-0" : "mr-2"}`}
+            />
+            {!isSidebarCollapsed && <span>Go to Homepage</span>}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleLogout}
+            className={`w-full justify-start ${
+              isSidebarCollapsed ? "px-0 justify-center" : "px-4"
+            }`}
+          >
+            <LogOut
+              className={`h-5 w-5 ${isSidebarCollapsed ? "mr-0" : "mr-2"}`}
+            />
+            {!isSidebarCollapsed && <span>Logout</span>}
+          </Button>
+        </div>
       </div>
       {/* Main content area */}
       <div className="flex-1 overflow-auto">

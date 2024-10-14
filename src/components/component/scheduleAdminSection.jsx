@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Clock, Plus, Minus } from "lucide-react";
 
 export function ScheduleSection({
@@ -71,7 +70,7 @@ export function ScheduleSection({
                           timestart: "",
                           timeend: "",
                           title: "",
-                          description: "",
+                          speakers: "",
                         },
                       ],
                     }
@@ -109,9 +108,9 @@ export function ScheduleSection({
         <CardHeader>
           <CardTitle>Schedule</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           {event.schedule.map((day, dayIndex) => (
-            <div key={dayIndex} className="mb-8">
+            <div key={dayIndex} className="mb-16">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold">
                   Day {dayIndex + 1} ({day.date})
@@ -203,12 +202,12 @@ export function ScheduleSection({
                           </Button>
                         </div>
                         <Input
-                          value={item.description}
+                          value={item.speakers}
                           onChange={(e) =>
                             handleScheduleChange(
                               dayIndex,
                               itemIndex,
-                              "description",
+                              "speakers",
                               e.target.value
                             )
                           }
@@ -225,7 +224,7 @@ export function ScheduleSection({
                         </span>
                       </div>
                       <h4 className="font-bold">{item.title}</h4>
-                      <p>{item.description}</p>
+                      <p>{item.speakers}</p>
                     </>
                   )}
                 </div>

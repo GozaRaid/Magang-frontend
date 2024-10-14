@@ -1,10 +1,18 @@
 export const initialEvents = [
   {
     id: "1",
-    title: "Tech Conference 2024",
-    date: "2024-06-15",
+    title:
+      "The 7th International Conference on Data Science and Its Applications",
+    place: "Bandung",
+    date: "December 31, 2024",
     heroImage: "/ancient-pura.jpg?height=400&width=800",
-    about: "Join us for the most innovative tech conference of the year.",
+    about:
+      'The rapid evolution of contemporary computing technology has propelled individuals to generate an unprecedented volume of data, characterized by both its size and diversity—a phenomenon unparalleled in the annals of computing history. This surge in data has sparked a compelling need for effective processing and analysis, captivating the attention of researchers who endeavor to propose innovative solutions. In response to this burgeoning interest, the 7th International Conference on Data Science and Its Applications (ICoDSA) 2024, themed "Data for Good: Leveraging Data Science for Social Impact," has been meticulously organized.\n\nThe conference serves as a focal point for researchers to share and disseminate their noteworthy contributions in the realms of data science, computational linguistics, and information science. Encompassing a broad spectrum of relevant topics, 7th ICoDSA 2024 extends a warm invitation to researchers to explore and present their latest insights in these dynamic fields.',
+    scope:
+      " 1st ICoDIS | IoP Science\n 2nd ICoDIS | IoP Science\n 3rd ICoDIS (ICoDSA) | IEEE Xplore\n 4th ICoDIS (ICoDSA) | IEEE Xplore\n 5th ICoDIS (ICoDSA) | IEEE Xplore\n 6th ICoDIS (ICoDSA) | IEEE Xplore",
+    where: "Telkom University",
+    when: "Wednesday - Friday, December 13 - 15, 2024",
+    who: "Assoc. Prof. Dr. Hoshang Kolivand\nAssoc Prof. Dr. Satria Mandala\nProf. Hui-Min David Wang\nProf. Dimitrios Georgakopoulos\nDr. Ahsan Morsed (Tutorial)",
     schedule: [
       {
         date: "2024-06-15",
@@ -13,13 +21,43 @@ export const initialEvents = [
             timestart: "09:00 AM",
             timeend: "10:00 AM",
             title: "Registration",
-            description: "Check-in and welcome coffee",
+            speakers: "Event Staff",
           },
           {
             timestart: "10:00 AM",
             timeend: "11:00 AM",
             title: "Keynote",
-            description: "Opening remarks and keynote speech",
+            speakers: "John Smith",
+          },
+          {
+            timestart: "11:00 AM",
+            timeend: "12:00 PM",
+            title: "Panel Discussion",
+            speakers: "Alice Johnson, Michael Lee, Sarah Wilson",
+          },
+          {
+            timestart: "12:00 PM",
+            timeend: "01:00 PM",
+            title: "Lunch Break",
+            speakers: "N/A",
+          },
+          {
+            timestart: "01:00 PM",
+            timeend: "02:30 PM",
+            title: "Breakout Sessions",
+            speakers: "David Miller, Rachel Adams",
+          },
+          {
+            timestart: "02:30 PM",
+            timeend: "03:30 PM",
+            title: "Product Showcase",
+            speakers: "Emily Turner, James Green",
+          },
+          {
+            timestart: "03:30 PM",
+            timeend: "04:30 PM",
+            title: "Networking",
+            speakers: "N/A",
           },
         ],
       },
@@ -30,29 +68,110 @@ export const initialEvents = [
             timestart: "09:30 AM",
             timeend: "02:00 PM",
             title: "Workshop",
-            description: "Hands-on coding workshop",
+            speakers: "Lisa Thompson",
           },
           {
             timestart: "02:00 PM",
             timeend: "03:00 PM",
             title: "Panel Discussion",
-            description: "Future of AI in Tech",
+            speakers: "Robert Davis, Karen Foster",
+          },
+          {
+            timestart: "03:00 PM",
+            timeend: "04:00 PM",
+            title: "Tech Expo",
+            speakers: "Tom Harris",
+          },
+          {
+            timestart: "04:00 PM",
+            timeend: "05:00 PM",
+            title: "Roundtable Discussion",
+            speakers: "Anna Clark, Peter Hall",
+          },
+        ],
+      },
+      {
+        date: "2024-06-17",
+        items: [
+          {
+            timestart: "09:30 AM",
+            timeend: "02:00 PM",
+            title: "Hackathon",
+            speakers: "Steve Rogers",
+          },
+          {
+            timestart: "02:00 PM",
+            timeend: "03:00 PM",
+            title: "Closing Ceremony",
+            speakers: "Monica Reyes",
+          },
+          {
+            timestart: "03:00 PM",
+            timeend: "04:00 PM",
+            title: "Networking Event",
+            speakers: "N/A",
+          },
+        ],
+      },
+      {
+        date: "2024-06-18",
+        items: [
+          {
+            timestart: "09:00 AM",
+            timeend: "10:30 AM",
+            title: "Networking Breakfast",
+            speakers: "N/A",
+          },
+          {
+            timestart: "10:30 AM",
+            timeend: "12:00 PM",
+            title: "Fireside Chat",
+            speakers: "Jessica Brown, Mark Johnson",
+          },
+          {
+            timestart: "12:00 PM",
+            timeend: "01:00 PM",
+            title: "Lunch Break",
+            speakers: "N/A",
+          },
+          {
+            timestart: "01:00 PM",
+            timeend: "03:00 PM",
+            title: "Final Workshop",
+            speakers: "Catherine White",
+          },
+          {
+            timestart: "03:00 PM",
+            timeend: "04:00 PM",
+            title: "Closing Remarks",
+            speakers: "Daniel Martinez",
           },
         ],
       },
     ],
     speakers: [
       {
-        name: "Jane Doe",
-        bio: "AI Research Scientist at TechCorp",
-        image: "/placeholder.svg?height=100&width=100",
+        name: "Assoc. Prof. Dr. Hoshang Kolivand",
+        bio: "School of Computer Science and Mathematics, Liverpool John Moores University, England",
+        image: "/HoshangKolivand.jpg",
       },
       {
-        name: "John Smith",
-        bio: "Founder of StartupX",
-        image: "/placeholder.svg?height=100&width=100",
+        name: "Assoc Prof. Dr. Satria Mandala",
+        bio: "Director CoE Humic Engineering, Telkom University, Bandung Indonesia",
+        image: "/Satrianew.jpg",
+      },
+      {
+        name: "Prof. Hui-Min David Wang",
+        bio: "Department of Chemical Engineering, Institute of Biomedical Engineering, National Chung Hsing University, Taiwan",
+        image: "/HuiMinnew.jpg",
+      },
+      {
+        name: "Prof. Dimitrios Georgakopoulos",
+        bio: "Director, ARC Industrial Transformation Research Hub for Future Digital Manufacturing, Swinburne University Swinburne University of Technology, Australia",
+        image: "/Dimitriosneww.jpg",
       },
     ],
-    location: "123 Tech Avenue, San Francisco, CA 94105",
+    map_url:
+      "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d829.0235262254835!2d115.16517819578816!3d-8.736788974631034!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd25b478fa53ef9%3A0xf85ed5e4cbe5222b!2sASTON%20Kuta%20Hotel%20%26%20Residence!5e0!3m2!1sen!2sid!4v1728494050618!5m2!1sen!2sid",
   },
 ];

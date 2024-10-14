@@ -7,26 +7,22 @@ function KeynoteSpeakers() {
   const speakers = [
     {
       name: "Assoc. Prof. Dr. Hoshang Kolivand",
-      title:
-        "School of Computer Science and Mathematics, Liverpool John Moores University, England",
+      bio: "School of Computer Science and Mathematics, Liverpool John Moores University, England",
       image: "/HoshangKolivand.jpg",
     },
     {
       name: "Assoc Prof. Dr. Satria Mandala",
-      title:
-        "Director CoE Humic Engineering, Telkom University, Bandung Indonesia",
+      bio: "Director CoE Humic Engineering, Telkom University, Bandung Indonesia",
       image: "/Satrianew.jpg",
     },
     {
       name: "Prof. Hui-Min David Wang",
-      title:
-        "Department of Chemical Engineering, Institute of Biomedical Engineering, National Chung Hsing University, Taiwan",
+      bio: "Department of Chemical Engineering, Institute of Biomedical Engineering, National Chung Hsing University, Taiwan",
       image: "/HuiMinnew.jpg",
     },
     {
       name: "Prof. Dimitrios Georgakopoulos",
-      title:
-        "Director, ARC Industrial Transformation Research Hub for Future Digital Manufacturing, Swinburne University Swinburne University of Technology, Australia",
+      bio: "Director, ARC Industrial Transformation Research Hub for Future Digital Manufacturing, Swinburne University Swinburne University of Technology, Australia",
       image: "/Dimitriosneww.jpg",
     },
   ];
@@ -49,7 +45,7 @@ function KeynoteSpeakers() {
             <h3 className="mb-2 text-xl font-semibold text-center">
               {speaker.name}
             </h3>
-            <p className="text-sm text-center text-gray-600">{speaker.title}</p>
+            <p className="text-sm text-center text-gray-600">{speaker.bio}</p>
           </div>
         ))}
       </div>

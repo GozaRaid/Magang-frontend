@@ -22,8 +22,8 @@ export function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (isLoggedIn && router.pathname !== "/") {
-      router.push("/");
+    if (isLoggedIn) {
+      router.push("/admin/dashboard");
     }
   }, [isLoggedIn, router]);
 
@@ -42,7 +42,7 @@ export function Login() {
         },
         onSuccess: (data) => {
           login(data.data.accessToken);
-          router.push("/admin/homepage");
+          router.push("/admin/dashboard");
         },
       }
     );

@@ -1,8 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button"; // Assuming Button component
-import { Label } from "@/components/ui/label"; // Assuming Label component
-import { Upload } from "lucide-react"; // Assuming you're using lucide icons
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Upload } from "lucide-react";
 import { useRef } from "react";
 
 export function HeroSection({ event, editMode, handleInputChange }) {
@@ -20,7 +20,7 @@ export function HeroSection({ event, editMode, handleInputChange }) {
       <CardContent className="relative">
         {editMode ? (
           <>
-            <div>
+            <div className="mb-4">
               <Label htmlFor="title">Event Title</Label>
               <Input
                 id="title"
@@ -28,6 +28,28 @@ export function HeroSection({ event, editMode, handleInputChange }) {
                 value={event.title}
                 onChange={(e) => handleInputChange(e, "title")}
                 className="w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="place">Place</Label>
+              <Input
+                id="place"
+                name="place"
+                value={event.place}
+                onChange={(e) => handleInputChange(e, "place")}
+                className="w-full"
+                placeholder="e.g., Bandung"
+              />
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="date">Date</Label>
+              <Input
+                id="date"
+                name="date"
+                value={event.date}
+                onChange={(e) => handleInputChange(e, "date")}
+                className="w-full"
+                placeholder="e.g., December 31, 2024"
               />
             </div>
             <div className="mt-4">
@@ -55,7 +77,7 @@ export function HeroSection({ event, editMode, handleInputChange }) {
                   name="heroImage"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleInputChange(e, "heroImage")} // Just pass the event and the field name
+                  onChange={(e) => handleInputChange(e, "heroImage")}
                   className="hidden"
                 />
               </div>
@@ -64,6 +86,9 @@ export function HeroSection({ event, editMode, handleInputChange }) {
         ) : (
           <>
             <h1 className="text-4xl font-bold">{event.title}</h1>
+            <p className="mt-2 text-xl">
+              {event.place}, {event.date}
+            </p>
             <img
               src={event.heroImage}
               alt="Event hero"
@@ -75,61 +100,3 @@ export function HeroSection({ event, editMode, handleInputChange }) {
     </Card>
   );
 }
-
-// import { Input } from "@/components/ui/input";
-
-// export function HeroSection({ event, editMode, handleInputChange }) {
-//   return (
-//     <section className="mb-12">
-//       <div className="relative">
-//         {editMode ? (
-//           <>
-//             <Input
-//               id="heroImage"
-//               name="heroImage"
-//               type="file"
-//               className="hidden"
-//               onChange={(e) => {
-//                 const file = e.target.files?.[0];
-//                 if (file) {
-//                   const reader = new FileReader();
-//                   reader.onloadend = () => {
-//                     handleInputChange({
-//                       target: { name: "heroImage", value: reader.result },
-//                     });
-//                   };
-//                   reader.readAsDataURL(file);
-//                 }
-//               }}
-//             />
-//             <label htmlFor="heroImage" className="cursor-pointer">
-//               <img
-//                 src={event.heroImage}
-//                 alt="Event hero"
-//                 className="w-full h-[400px] object-cover rounded-lg"
-//               />
-//             </label>
-//           </>
-//         ) : (
-//           <img
-//             src={event.heroImage}
-//             alt="Event hero"
-//             className="w-full h-[400px] object-cover rounded-lg"
-//           />
-//         )}
-//         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-//           {editMode ? (
-//             <Input
-//               name="title"
-//               value={event.title}
-//               onChange={(e) => handleInputChange(e, "title")}
-//               className="w-3/4 text-4xl font-bold text-white bg-transparent border-b border-white"
-//             />
-//           ) : (
-//             <h1 className="text-4xl font-bold text-white">{event.title}</h1>
-//           )}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }

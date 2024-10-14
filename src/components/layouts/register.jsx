@@ -54,7 +54,7 @@ export function Register() {
         },
         onSuccess: (data) => {
           login(data.data.accessToken);
-          router.push("/");
+          router.push("/admin/dashboard");
         },
       }
     );
@@ -86,6 +86,7 @@ export function Register() {
                 <Field
                   id="username"
                   name="username"
+                  type="text"
                   placeholder="John"
                   className="input-custom"
                 />
@@ -123,7 +124,7 @@ export function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="keyword">keyword</Label>
+                <Label htmlFor="keyword">Keyword</Label>
                 <Field id="keyword" name="keyword" className="input-custom" />
                 {errors.keyword && touched.keyword && (
                   <div className="text-red-500">{errors.keyword}</div>
