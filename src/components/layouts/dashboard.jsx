@@ -32,6 +32,8 @@ import { ScheduleSection } from "@/components/component/scheduleAdminSection";
 import { SpeakersSection } from "@/components/component/speakerAdminSection";
 import { LocationSection } from "@/components/component/locationAdminSection";
 import { useEventManagement } from "@/components/layouts/useEventManagement";
+import { useAuth } from "@/features/auth/AuthContext";
+import { useRouter } from "next/router";
 
 export function Dashboard() {
   const {
@@ -45,7 +47,8 @@ export function Dashboard() {
     setEditMode,
     setEvents,
   } = useEventManagement();
-
+  const router = useRouter();
+  const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState("home");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -84,13 +87,12 @@ export function Dashboard() {
   };
 
   const handleLogout = () => {
-    // Implement logout logic here
-    console.log("Logging out...");
+    logout();
+    console.log("User logged out");
   };
 
   const handleGoToHomepage = () => {
-    // Implement navigation to homepage here
-    console.log("Navigating to homepage...");
+    router.push("/");
   };
 
   const ActiveSectionComponent = sections.find(
