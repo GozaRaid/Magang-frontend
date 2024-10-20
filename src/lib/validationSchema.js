@@ -1,40 +1,59 @@
 import { z } from "zod";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
-
-export const aboutSectionSchema = z.object({
-  about: z.string().min(10, "About must be at least 10 characters long"),
-  scope: z.string().min(5, "Scope must be at least 5 characters long"),
-  where: z.string().min(3, "Where must be at least 3 characters long"),
-  when: z.string().min(5, "When must be at least 5 characters long"),
-  who: z.string().min(5, "Who must be at least 5 characters long"),
-});
+const timeRegex = /^(0?[0-9]|1[0-2]):([0-5][0-9]) ?(AM|PM)$/;
 
 export const heroSectionSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters long"),
-  place: z.string().min(5, "Place must be at least 5 characters long"),
-  date: z.date().min(new Date(), "Date must be in the future"),
-  image: z.any().refine((value) => ACCEPTED_IMAGE_TYPES.includes(value.type), {
-    message: "Only JPEG, PNG, and JPG images are allowed",
-  }),
+  title: z.string().min(1, "Title are required"),
+  city: z.string().min(1, "Place are required"),
+  image: z
+    .instanceof(File)
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only JPEG, PNG, and JPG images are allowed"
+    ),
+});
+
+export const aboutSectionSchema = z.object({
+  about: z.string().min(1, "About are required"),
+  scope: z.string().min(1, "Scope are required"),
+  where: z.string().min(1, "Where are required"),
+  who: z.string().min(1, "Who are required"),
+});
+
+export const scheduleItemSchema = z.object({
+  timestart: z
+    .string()
+    .regex(timeRegex, "Invalid time format (use HH:MM AM/PM)"),
+  timeend: z.string().regex(timeRegex, "Invalid time format (use HH:MM AM/PM)"),
+  title: z.string().min(1, "Title is required"),
+  speakers: z.string().min(1, "Speakers are required"),
 });
 
 export const scheduleSectionSchema = z.object({
-  date: z.date().min(new Date(), "Date must be in the future"),
-  timestart: z.string().time({ message: "Invalid time format" }),
-  timeend: z.string().time({ message: "Invalid time format" }),
-  title: z.string().min(5, "Title must be at least 5 characters long"),
-  speakers: z.string().min(5, "Speakers must be at least 5 characters long"),
+  date: z.coerce.date().min(new Date(), "Date must be in the future"),
+  items: z
+    .array(scheduleItemSchema)
+    .min(1, "At least one schedule item is required"),
 });
 
 export const speakersSectionSchema = z.object({
-  name: z.string().min(5, "Name must be at least 5 characters long"),
-  bio: z.string().min(5, "Bio must be at least 5 characters long"),
-  image: z.any().refine((value) => ACCEPTED_IMAGE_TYPES.includes(value.type), {
-    message: "Only JPEG, PNG, and JPG images are allowed",
-  }),
+  name: z.string().min(1, "Name are required"),
+  bio: z.string().min(1, "Bio are required"),
+  image: z.union([
+    z
+      .instanceof(File)
+      .refine(
+        (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+        "Only JPEG, PNG, and JPG images are allowed"
+      ),
+    z
+      .string()
+      .url("Invalid image URL")
+      .or(z.string().min(1, "Image is required")),
+  ]),
 });
 
-export const locationSecntionSchema = z.object({
-  map_url: z.string.url("Invalid URL"),
+export const locationSectionSchema = z.object({
+  map_url: z.string().url("Invalid URL"),
 });

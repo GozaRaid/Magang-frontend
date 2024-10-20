@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import * as Yup from "yup";
+import { z } from "zod";
 import { Formik, Form, Field } from "formik";
+import { toFormikValidationSchema } from "zod-formik-adapter";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { usePostUser } from "@/features/auth/usePostUser";
@@ -17,16 +18,24 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-const validationSchema = Yup.object({
-  username: Yup.string().required("Username is required"),
-  keyword: Yup.string()
-    .required("Invalid keyword format")
-    .required("keyword is required"),
-  password: Yup.string().required("Password is required"),
-  reenterPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Re-entering your password is required"),
+// Define the Zod validation schema
+const registerValidationSchema = z.object({
+  username: z.string().min(1, { message: "Username is required" }),
+  keyword: z.string().min(1, { message: "Keyword is required" }),
+  password: z.string().min(1, { message: "Password is required" }),
+  reenterPassword: z
+    .string()
+    .min(1, { message: "Re-entering your password is required" }),
 });
+
+// Add custom validation for password match
+registerValidationSchema.refine(
+  (data) => data.password === data.reenterPassword,
+  {
+    message: "Passwords must match",
+    path: ["reenterPassword"],
+  }
+);
 
 export function Register() {
   const router = useRouter();
@@ -37,27 +46,24 @@ export function Register() {
 
   useEffect(() => {
     if (isLoggedIn && router.pathname !== "/") {
-      router.push("/");
+      router.push("/admin/dashboard");
     }
   }, [isLoggedIn, router]);
 
-  const handleSubmit = async (values, { setSubmitting }) => {
-    const { username, password, keyword } = values;
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    setIsLoading(true);
+    try {
+      const { username, password, keyword } = values;
 
-    mutation.mutate(
-      { username, password, keyword },
-      {
-        onError: (error) => {
-          setRegisterFailed(error.message);
-          setSubmitting(false);
-          setIsLoading(false);
-        },
-        onSuccess: (data) => {
-          login(data.data.accessToken);
-          router.push("/admin/dashboard");
-        },
-      }
-    );
+      await mutation.mutateAsync({ username, password, keyword });
+      login(data.data.accessToken);
+      router.push("/admin/dashboard");
+    } catch (error) {
+      setRegisterFailed(error.message);
+    } finally {
+      setSubmitting(false);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -76,7 +82,7 @@ export function Register() {
             password: "",
             reenterPassword: "",
           }}
-          validationSchema={validationSchema}
+          validationSchema={toFormikValidationSchema(registerValidationSchema)}
           onSubmit={handleSubmit}
         >
           {({ errors, touched, isSubmitting }) => (

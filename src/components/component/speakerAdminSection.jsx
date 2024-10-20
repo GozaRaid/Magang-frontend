@@ -1,16 +1,42 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageIcon, Plus, Minus } from "lucide-react";
+import { speakersSectionSchema } from "@/lib/validationSchema";
 
 export function SpeakersSection({
   event,
   editMode,
   setEvents,
   selectedEventId,
+  setIsValid,
 }) {
-  // Include the handleSpeakerChange, addSpeaker, and removeSpeaker functions here
+  const [errors, setErrors] = useState([]);
+
+  const validateSpeaker = (speaker, index) => {
+    try {
+      speakersSectionSchema.parse(speaker);
+      setErrors((prev) => {
+        const newErrors = [...prev];
+        newErrors[index] = {};
+        return newErrors;
+      });
+      return true;
+    } catch (error) {
+      setErrors((prev) => {
+        const newErrors = [...prev];
+        newErrors[index] = error.errors.reduce((acc, curr) => {
+          acc[curr.path[0]] = curr.message;
+          return acc;
+        }, {});
+        return newErrors;
+      });
+      return false;
+    }
+  };
+
   const handleSpeakerChange = (index, field, value) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
@@ -24,6 +50,13 @@ export function SpeakersSection({
           : event
       )
     );
+
+    // Validate the updated speaker
+    const updatedSpeaker = {
+      ...event.speakers[index],
+      [field]: value,
+    };
+    validateSpeaker(updatedSpeaker, index);
   };
 
   const addSpeaker = () => {
@@ -37,13 +70,14 @@ export function SpeakersSection({
                 {
                   name: "",
                   bio: "",
-                  image: "/placeholder.svg?height=100&width=100",
+                  image: "",
                 },
               ],
             }
           : event
       )
     );
+    setErrors((prev) => [...prev, {}]);
   };
 
   const removeSpeaker = (index) => {
@@ -54,13 +88,23 @@ export function SpeakersSection({
           : event
       )
     );
+    setErrors((prev) => prev.filter((_, i) => i !== index));
   };
+
+  useEffect(() => {
+    if (editMode) {
+      const isValid = event.speakers.every((speaker, index) =>
+        validateSpeaker(speaker, index)
+      );
+      setIsValid(isValid);
+    }
+  }, [editMode, event.speakers, setIsValid]);
 
   return (
     <section className="mb-12">
       <Card>
-        <CardHeader>
-          <CardTitle>Speakers</CardTitle>
+        <CardHeader className="p-4">
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -68,7 +112,11 @@ export function SpeakersSection({
               <div key={index} className="flex items-start space-x-4">
                 <div className="relative w-24 h-24">
                   <img
-                    src={speaker.image}
+                    src={
+                      speaker.image instanceof File
+                        ? URL.createObjectURL(speaker.image)
+                        : speaker.image
+                    }
                     alt={speaker.name}
                     className="object-cover w-full h-full rounded-full"
                   />
@@ -87,15 +135,7 @@ export function SpeakersSection({
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              handleSpeakerChange(
-                                index,
-                                "image",
-                                reader.result
-                              );
-                            };
-                            reader.readAsDataURL(file);
+                            handleSpeakerChange(index, "image", file);
                           }
                         }}
                       />
@@ -110,21 +150,42 @@ export function SpeakersSection({
                         onChange={(e) =>
                           handleSpeakerChange(index, "name", e.target.value)
                         }
-                        className="mb-2"
+                        className={`mb-2 ${
+                          errors[index]?.name ? "border-red-500" : ""
+                        }`}
                         placeholder="Speaker Name"
                       />
+                      {errors[index]?.name && (
+                        <p className="mb-2 text-sm text-red-500">
+                          {errors[index].name}
+                        </p>
+                      )}
                       <Textarea
                         value={speaker.bio}
                         onChange={(e) =>
                           handleSpeakerChange(index, "bio", e.target.value)
                         }
+                        className={`${
+                          errors[index]?.bio ? "border-red-500" : ""
+                        }`}
                         placeholder="Speaker Bio"
                       />
+                      {errors[index]?.bio && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors[index].bio}
+                        </p>
+                      )}
+                      {errors[index]?.image && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors[index].image}
+                        </p>
+                      )}
                       <Button
                         onClick={() => removeSpeaker(index)}
                         size="sm"
                         variant="destructive"
                         className="mt-2"
+                        disabled={event.speakers.length === 1}
                       >
                         <Minus size={16} className="mr-2" />
                         Remove Speaker

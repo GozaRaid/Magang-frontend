@@ -1,114 +1,197 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Clock, Plus, Minus } from "lucide-react";
+import {
+  scheduleSectionSchema,
+  scheduleItemSchema,
+} from "@/lib/validationSchema";
 
 export function ScheduleSection({
   event,
   editMode,
   setEvents,
   selectedEventId,
-  handleDateChange,
+  setIsValid,
 }) {
+  const [errors, setErrors] = useState({});
+
+  const validateScheduleItem = (item) => {
+    try {
+      scheduleItemSchema.parse(item);
+      return null; // No errors
+    } catch (error) {
+      return error.errors.reduce((acc, err) => {
+        acc[err.path[0]] = err.message;
+        return acc;
+      }, {});
+    }
+  };
+
+  const validateSchedule = (schedule) => {
+    try {
+      scheduleSectionSchema.parse(schedule);
+      return null; // No errors
+    } catch (error) {
+      return error.errors.reduce((acc, err) => {
+        acc[err.path.join(".")] = err.message;
+        return acc;
+      }, {});
+    }
+  };
+
   const handleScheduleChange = (dayIndex, itemIndex, field, value) => {
-    setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.id === selectedEventId
-          ? {
-              ...e,
-              schedule: e.schedule.map((day, dIndex) =>
-                dIndex === dayIndex
-                  ? {
-                      ...day,
-                      items: day.items.map((item, iIndex) =>
-                        iIndex === itemIndex
-                          ? { ...item, [field]: value }
-                          : item
-                      ),
-                    }
-                  : day
-              ),
-            }
-          : e
-      )
+    const updatedSchedule = event.schedule.map((day, dIndex) =>
+      dIndex === dayIndex
+        ? {
+            ...day,
+            items: day.items.map((item, iIndex) =>
+              iIndex === itemIndex ? { ...item, [field]: value } : item
+            ),
+          }
+        : day
     );
+
+    const updatedEvent = { ...event, schedule: updatedSchedule };
+    setEvents((prevEvents) =>
+      prevEvents.map((e) => (e.id === selectedEventId ? updatedEvent : e))
+    );
+
+    validateAllSchedule(updatedSchedule);
   };
 
   const addDay = () => {
+    const newDay = {
+      date: "",
+      items: [
+        {
+          timestart: "09:00 AM",
+          timeend: "10:00 AM",
+          title: "New Event",
+          speakers: "TBA",
+        },
+      ],
+    };
+    const updatedSchedule = [...event.schedule, newDay];
     setEvents((prevEvents) =>
       prevEvents.map((e) =>
-        e.id === selectedEventId
-          ? { ...e, schedule: [...e.schedule, { date: "", items: [] }] }
-          : e
+        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
       )
     );
+
+    validateAllSchedule(updatedSchedule);
   };
 
   const removeDay = (index) => {
+    const updatedSchedule = event.schedule.filter((_, i) => i !== index);
     setEvents((prevEvents) =>
       prevEvents.map((e) =>
-        e.id === selectedEventId
-          ? { ...e, schedule: e.schedule.filter((_, i) => i !== index) }
-          : e
+        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
       )
     );
+
+    validateAllSchedule(updatedSchedule);
   };
 
   const addScheduleItem = (dayIndex) => {
+    const newItem = {
+      timestart: "",
+      timeend: "",
+      title: "",
+      speakers: "",
+    };
+    const updatedSchedule = event.schedule.map((day, index) =>
+      index === dayIndex ? { ...day, items: [...day.items, newItem] } : day
+    );
     setEvents((prevEvents) =>
       prevEvents.map((e) =>
-        e.id === selectedEventId
-          ? {
-              ...e,
-              schedule: e.schedule.map((day, index) =>
-                index === dayIndex
-                  ? {
-                      ...day,
-                      items: [
-                        ...day.items,
-                        {
-                          timestart: "",
-                          timeend: "",
-                          title: "",
-                          speakers: "",
-                        },
-                      ],
-                    }
-                  : day
-              ),
-            }
-          : e
+        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
       )
     );
+
+    validateAllSchedule(updatedSchedule);
   };
 
   const removeScheduleItem = (dayIndex, itemIndex) => {
+    const updatedSchedule = event.schedule.map((day, index) =>
+      index === dayIndex
+        ? { ...day, items: day.items.filter((_, i) => i !== itemIndex) }
+        : day
+    );
     setEvents((prevEvents) =>
       prevEvents.map((e) =>
-        e.id === selectedEventId
-          ? {
-              ...e,
-              schedule: e.schedule.map((day, index) =>
-                index === dayIndex
-                  ? {
-                      ...day,
-                      items: day.items.filter((_, i) => i !== itemIndex),
-                    }
-                  : day
-              ),
-            }
-          : e
+        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
       )
     );
+
+    validateAllSchedule(updatedSchedule);
   };
+
+  const handleDayDateChange = (dayIndex, value) => {
+    const updatedSchedule = event.schedule.map((day, index) =>
+      index === dayIndex
+        ? {
+            ...day,
+            date: value,
+            items:
+              day.items.length === 0
+                ? [
+                    {
+                      timestart: "09:00 AM",
+                      timeend: "10:00 AM",
+                      title: "New Event",
+                      speakers: "TBA",
+                    },
+                  ]
+                : day.items,
+          }
+        : day
+    );
+    setEvents((prevEvents) =>
+      prevEvents.map((e) =>
+        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
+      )
+    );
+
+    validateAllSchedule(updatedSchedule);
+  };
+
+  const validateAllSchedule = (schedule) => {
+    const newErrors = {};
+    let isValid = true;
+
+    schedule.forEach((day, dayIndex) => {
+      const dayErrors = validateSchedule(day);
+      if (dayErrors) {
+        newErrors[`day-${dayIndex}`] = dayErrors;
+        isValid = false;
+      }
+
+      day.items.forEach((item, itemIndex) => {
+        const itemErrors = validateScheduleItem(item);
+        if (itemErrors) {
+          newErrors[`day-${dayIndex}-item-${itemIndex}`] = itemErrors;
+          isValid = false;
+        }
+      });
+    });
+
+    setErrors(newErrors);
+    setIsValid(isValid);
+  };
+
+  useEffect(() => {
+    validateAllSchedule(event.schedule);
+  }, [event.schedule, setIsValid]);
 
   return (
     <section className="mb-12">
       <Card>
-        <CardHeader>
-          <CardTitle>Schedule</CardTitle>
+        <CardHeader className="p-4">
+          <CardTitle>Event Schedule</CardTitle>
         </CardHeader>
-        <CardContent className="">
+        <CardContent>
           {event.schedule.map((day, dayIndex) => (
             <div key={dayIndex} className="mb-16">
               <div className="flex items-center justify-between mb-4">
@@ -136,12 +219,18 @@ export function ScheduleSection({
               </div>
               {editMode && (
                 <Input
-                  id={`day-${dayIndex}`}
                   type="date"
                   value={day.date}
-                  onChange={(e) => handleDateChange(dayIndex, e.target.value)}
+                  onChange={(e) =>
+                    handleDayDateChange(dayIndex, e.target.value)
+                  }
                   className="mb-4"
                 />
+              )}
+              {errors[`day-${dayIndex}`] && (
+                <div className="mb-2 text-red-500">
+                  {errors[`day-${dayIndex}`].date}
+                </div>
               )}
               {day.items.map((item, itemIndex) => (
                 <div key={itemIndex} className="mb-4">
@@ -150,7 +239,7 @@ export function ScheduleSection({
                       <div className="p-4 mb-6 border rounded">
                         <div className="flex items-center mb-2">
                           <Input
-                            type="timestart"
+                            type="text"
                             value={item.timestart}
                             onChange={(e) =>
                               handleScheduleChange(
@@ -161,10 +250,10 @@ export function ScheduleSection({
                               )
                             }
                             className="w-1/4 mr-2"
-                            placeholder="Time"
+                            placeholder="Start Time"
                           />
                           <Input
-                            type="timeend"
+                            type="text"
                             value={item.timeend}
                             onChange={(e) =>
                               handleScheduleChange(
@@ -175,7 +264,7 @@ export function ScheduleSection({
                               )
                             }
                             className="w-1/4 mr-2"
-                            placeholder="Time"
+                            placeholder="End Time"
                           />
                           <Input
                             value={item.title}
@@ -211,8 +300,19 @@ export function ScheduleSection({
                               e.target.value
                             )
                           }
-                          placeholder="Perfomers/Speakers"
+                          placeholder="Performers/Speakers"
                         />
+                        {errors[`day-${dayIndex}-item-${itemIndex}`] && (
+                          <div className="mt-2 text-red-500">
+                            {Object.values(
+                              errors[`day-${dayIndex}-item-${itemIndex}`]
+                            ).map((error, index) => (
+                              <div key={index} className="text-sm">
+                                {error}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </>
                   ) : (

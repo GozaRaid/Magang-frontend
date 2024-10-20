@@ -42,7 +42,7 @@ function KeynoteSpeakers() {
                 className="object-cover w-full h-full"
               />
             </div>
-            <h3 className="mb-2 text-xl font-semibold text-center">
+            <h3 className="mb-2 text-2xl font-semibold text-center">
               {speaker.name}
             </h3>
             <p className="text-sm text-center text-gray-600">{speaker.bio}</p>

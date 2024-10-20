@@ -5,7 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { aboutSectionSchema } from "@/lib/validationSchema";
 
-export function AboutSection({ event, editMode, handleInputChange }) {
+export function AboutSection({
+  event,
+  editMode,
+  handleInputChange,
+  setIsValid,
+}) {
   const [errors, setErrors] = useState({});
 
   const splitTextIntoParagraphs = (text) => {
@@ -18,8 +23,10 @@ export function AboutSection({ event, editMode, handleInputChange }) {
     try {
       aboutSectionSchema.shape[field].parse(value);
       setErrors((prev) => ({ ...prev, [field]: null }));
+      return true;
     } catch (error) {
       setErrors((prev) => ({ ...prev, [field]: error.errors[0].message }));
+      return false;
     }
   };
 
@@ -30,17 +37,18 @@ export function AboutSection({ event, editMode, handleInputChange }) {
 
   useEffect(() => {
     if (editMode) {
-      Object.keys(aboutSectionSchema.shape).forEach((field) => {
-        validateField(field, event[field]);
-      });
+      const isValid = Object.keys(aboutSectionSchema.shape).every((field) =>
+        validateField(field, event[field])
+      );
+      setIsValid(isValid);
     }
-  }, [editMode, event]);
+  }, [editMode, event, setIsValid]);
 
   return (
     <section className="mb-12">
       <Card>
-        <CardHeader>
-          <CardTitle>About the Event</CardTitle>
+        <CardHeader className="p-4">
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
           {editMode ? (
@@ -89,20 +97,6 @@ export function AboutSection({ event, editMode, handleInputChange }) {
                 />
                 {errors.where && (
                   <p className="mt-1 text-sm text-red-500">{errors.where}</p>
-                )}
-              </div>
-              <div className="mb-4">
-                <Label htmlFor="when">When</Label>
-                <Input
-                  id="when"
-                  name="when"
-                  value={event.when}
-                  onChange={(e) => handleChange(e, "when")}
-                  className={`w-full ${errors.when ? "border-red-500" : ""}`}
-                  placeholder="Enter the date of the event..."
-                />
-                {errors.when && (
-                  <p className="mt-1 text-sm text-red-500">{errors.when}</p>
                 )}
               </div>
               <div className="mb-4">

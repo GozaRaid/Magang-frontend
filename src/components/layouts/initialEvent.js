@@ -3,15 +3,15 @@ export const initialEvents = [
     id: "1",
     title:
       "The 7th International Conference on Data Science and Its Applications",
-    place: "Bandung",
+    city: "Bandung",
     date: "December 31, 2024",
-    heroImage: "/ancient-pura.jpg?height=400&width=800",
+    image: "/ancient-pura.jpg?height=400&width=800",
     about:
       'The rapid evolution of contemporary computing technology has propelled individuals to generate an unprecedented volume of data, characterized by both its size and diversity—a phenomenon unparalleled in the annals of computing history. This surge in data has sparked a compelling need for effective processing and analysis, captivating the attention of researchers who endeavor to propose innovative solutions. In response to this burgeoning interest, the 7th International Conference on Data Science and Its Applications (ICoDSA) 2024, themed "Data for Good: Leveraging Data Science for Social Impact," has been meticulously organized.\n\nThe conference serves as a focal point for researchers to share and disseminate their noteworthy contributions in the realms of data science, computational linguistics, and information science. Encompassing a broad spectrum of relevant topics, 7th ICoDSA 2024 extends a warm invitation to researchers to explore and present their latest insights in these dynamic fields.',
     scope:
       " 1st ICoDIS | IoP Science\n 2nd ICoDIS | IoP Science\n 3rd ICoDIS (ICoDSA) | IEEE Xplore\n 4th ICoDIS (ICoDSA) | IEEE Xplore\n 5th ICoDIS (ICoDSA) | IEEE Xplore\n 6th ICoDIS (ICoDSA) | IEEE Xplore",
     where: "Telkom University",
-    when: "Wednesday - Friday, December 13 - 15, 2024",
+    when: "13 - 15 December 2024",
     who: "Assoc. Prof. Dr. Hoshang Kolivand\nAssoc Prof. Dr. Satria Mandala\nProf. Hui-Min David Wang\nProf. Dimitrios Georgakopoulos\nDr. Ahsan Morsed (Tutorial)",
     schedule: [
       {

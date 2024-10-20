@@ -1,21 +1,71 @@
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
-import { useRef } from "react";
+import { heroSectionSchema } from "@/lib/validationSchema";
 
-export function HeroSection({ event, editMode, handleInputChange }) {
+export function HeroSection({
+  event,
+  editMode,
+  handleInputChange,
+  setIsValid,
+}) {
   const fileInputRef = useRef(null);
+  const [errors, setErrors] = useState({});
 
   const triggerHeroImageUpload = () => {
     fileInputRef.current?.click();
   };
 
+  const validateField = (field, value) => {
+    try {
+      if (field === "image") {
+        // Skip validation for image if it's a string (URL)
+        if (typeof value === "string") return true;
+        heroSectionSchema.shape[field].parse(value);
+      } else {
+        heroSectionSchema.shape[field].parse(value);
+      }
+      setErrors((prev) => ({ ...prev, [field]: null }));
+      return true;
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, [field]: error.errors[0].message }));
+      return false;
+    }
+  };
+
+  const handleChange = (e, field) => {
+    if (field === "image") {
+      const file = e.target.files[0];
+      if (file) {
+        handleInputChange({ target: { name: field, value: file } }, field);
+        validateField(field, file);
+      }
+    } else {
+      handleInputChange(e, field);
+      validateField(field, e.target.value);
+    }
+  };
+
+  useEffect(() => {
+    if (editMode) {
+      const isValid = Object.keys(heroSectionSchema.shape).every((field) => {
+        if (field === "image" && typeof event[field] === "string") {
+          // Skip validation for image if it's a string (URL)
+          return true;
+        }
+        return validateField(field, event[field]);
+      });
+      setIsValid(isValid);
+    }
+  }, [editMode, event, setIsValid]);
+
   return (
     <Card className="mb-12">
-      <CardHeader>
-        <CardTitle>Event Details</CardTitle>
+      <CardHeader className="p-4">
+        <CardTitle></CardTitle>
       </CardHeader>
       <CardContent className="relative">
         {editMode ? (
@@ -26,38 +76,37 @@ export function HeroSection({ event, editMode, handleInputChange }) {
                 id="title"
                 name="title"
                 value={event.title}
-                onChange={(e) => handleInputChange(e, "title")}
-                className="w-full"
+                onChange={(e) => handleChange(e, "title")}
+                className={`w-full ${errors.title ? "border-red-500" : ""}`}
               />
+              {errors.title && (
+                <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+              )}
             </div>
             <div className="mb-4">
-              <Label htmlFor="place">Place</Label>
+              <Label htmlFor="city">City</Label>
               <Input
-                id="place"
-                name="place"
-                value={event.place}
-                onChange={(e) => handleInputChange(e, "place")}
-                className="w-full"
+                id="city"
+                name="city"
+                value={event.city}
+                onChange={(e) => handleChange(e, "city")}
+                className={`w-full ${errors.city ? "border-red-500" : ""}`}
                 placeholder="e.g., Bandung"
               />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="date">Date</Label>
-              <Input
-                id="date"
-                name="date"
-                value={event.date}
-                onChange={(e) => handleInputChange(e, "date")}
-                className="w-full"
-                placeholder="e.g., December 31, 2024"
-              />
+              {errors.city && (
+                <p className="mt-1 text-sm text-red-500">{errors.city}</p>
+              )}
             </div>
             <div className="mt-4">
-              <Label htmlFor="heroImage">Event Image</Label>
+              <Label htmlFor="image">Event Image</Label>
               <div className="flex items-center justify-center mt-2">
                 <div className="relative w-full h-[200px] bg-gray-100 rounded-lg overflow-hidden">
                   <img
-                    src={event.heroImage}
+                    src={
+                      event.image instanceof File
+                        ? URL.createObjectURL(event.image)
+                        : event.image
+                    }
                     alt="Event hero"
                     className="object-cover w-full h-full"
                   />
@@ -73,26 +122,33 @@ export function HeroSection({ event, editMode, handleInputChange }) {
                 </div>
                 <Input
                   ref={fileInputRef}
-                  id="heroImage"
-                  name="heroImage"
+                  id="image"
+                  name="image"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleInputChange(e, "heroImage")}
+                  onChange={(e) => handleChange(e, "image")}
                   className="hidden"
                 />
               </div>
+              {errors.image && (
+                <p className="mt-1 text-sm text-red-500">{errors.image}</p>
+              )}
             </div>
           </>
         ) : (
           <>
             <h1 className="text-4xl font-bold">{event.title}</h1>
             <p className="mt-2 text-xl">
-              {event.place}, {event.date}
+              {event.city}, {event.date}
             </p>
             <img
-              src={event.heroImage}
+              src={
+                event.image instanceof File
+                  ? URL.createObjectURL(event.image)
+                  : event.image
+              }
               alt="Event hero"
-              className="w-full h-[400px] object-cover rounded-lg mt-4"
+              className="object-cover w-full h-full mt-4 rounded-lg"
             />
           </>
         )}

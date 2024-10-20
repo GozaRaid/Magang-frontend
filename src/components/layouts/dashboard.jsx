@@ -53,6 +53,7 @@ export function Dashboard() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [nextSection, setNextSection] = useState(null);
+  const [isFormValid, setIsFormValid] = useState(true);
 
   const sections = [
     { name: "Home", icon: Home, component: HeroSection },
@@ -86,9 +87,13 @@ export function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    console.log("User logged out");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleGoToHomepage = () => {
@@ -188,6 +193,7 @@ export function Dashboard() {
                 <Button
                   onClick={handleSave}
                   className="bg-green-500 hover:bg-green-600"
+                  disabled={!isFormValid}
                 >
                   <Save className="mr-2" size={16} />
                   Save Changes
@@ -217,6 +223,7 @@ export function Dashboard() {
               event={selectedEvent}
               editMode={editMode}
               handleInputChange={handleInputChange}
+              setIsValid={setIsFormValid}
               {...(activeSection === "schedule" || activeSection === "speakers"
                 ? { setEvents, selectedEventId, handleDateChange }
                 : {})}
@@ -239,7 +246,10 @@ export function Dashboard() {
             <AlertDialogCancel onClick={handleDiscardAlert}>
               Discard
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleKeepChanges}>
+            <AlertDialogAction
+              onClick={handleKeepChanges}
+              disabled={!isFormValid}
+            >
               Save
             </AlertDialogAction>
           </AlertDialogFooter>
