@@ -8,8 +8,32 @@ export const initialEvents = [
     image: "/ancient-pura.jpg?height=400&width=800",
     about:
       'The rapid evolution of contemporary computing technology has propelled individuals to generate an unprecedented volume of data, characterized by both its size and diversity—a phenomenon unparalleled in the annals of computing history. This surge in data has sparked a compelling need for effective processing and analysis, captivating the attention of researchers who endeavor to propose innovative solutions. In response to this burgeoning interest, the 7th International Conference on Data Science and Its Applications (ICoDSA) 2024, themed "Data for Good: Leveraging Data Science for Social Impact," has been meticulously organized.\n\nThe conference serves as a focal point for researchers to share and disseminate their noteworthy contributions in the realms of data science, computational linguistics, and information science. Encompassing a broad spectrum of relevant topics, 7th ICoDSA 2024 extends a warm invitation to researchers to explore and present their latest insights in these dynamic fields.',
-    scope:
-      " 1st ICoDIS | IoP Science\n 2nd ICoDIS | IoP Science\n 3rd ICoDIS (ICoDSA) | IEEE Xplore\n 4th ICoDIS (ICoDSA) | IEEE Xplore\n 5th ICoDIS (ICoDSA) | IEEE Xplore\n 6th ICoDIS (ICoDSA) | IEEE Xplore",
+    conferences: [
+      {
+        title: "1st ICoDIS | IoP Science",
+        href: "https://iopscience.iop.org/article/...",
+      },
+      {
+        title: "2nd ICoDIS | IoP Science",
+        href: "https://iopscience.iop.org/article/...",
+      },
+      {
+        title: "3rd ICoDIS (ICoDSA) | IEEE Xplore",
+        href: "https://ieeexplore.ieee.org/document/...",
+      },
+      {
+        title: "4th ICoDIS (ICoDSA) | IEEE Xplore",
+        href: "https://ieeexplore.ieee.org/document/...",
+      },
+      {
+        title: "5th ICoDIS (ICoDSA) | IEEE Xplore",
+        href: "https://ieeexplore.ieee.org/document/...",
+      },
+      {
+        title: "6th ICoDIS (ICoDSA) | IEEE Xplore",
+        href: "https://ieeexplore.ieee.org/document/...",
+      },
+    ],
     where: "Telkom University",
     when: "13 - 15 December 2024",
     who: "Assoc. Prof. Dr. Hoshang Kolivand\nAssoc Prof. Dr. Satria Mandala\nProf. Hui-Min David Wang\nProf. Dimitrios Georgakopoulos\nDr. Ahsan Morsed (Tutorial)",
@@ -87,64 +111,6 @@ export const initialEvents = [
             timeend: "05:00 PM",
             title: "Roundtable Discussion",
             speakers: "Anna Clark, Peter Hall",
-          },
-        ],
-      },
-      {
-        date: "2024-06-17",
-        items: [
-          {
-            timestart: "09:30 AM",
-            timeend: "02:00 PM",
-            title: "Hackathon",
-            speakers: "Steve Rogers",
-          },
-          {
-            timestart: "02:00 PM",
-            timeend: "03:00 PM",
-            title: "Closing Ceremony",
-            speakers: "Monica Reyes",
-          },
-          {
-            timestart: "03:00 PM",
-            timeend: "04:00 PM",
-            title: "Networking Event",
-            speakers: "N/A",
-          },
-        ],
-      },
-      {
-        date: "2024-06-18",
-        items: [
-          {
-            timestart: "09:00 AM",
-            timeend: "10:30 AM",
-            title: "Networking Breakfast",
-            speakers: "N/A",
-          },
-          {
-            timestart: "10:30 AM",
-            timeend: "12:00 PM",
-            title: "Fireside Chat",
-            speakers: "Jessica Brown, Mark Johnson",
-          },
-          {
-            timestart: "12:00 PM",
-            timeend: "01:00 PM",
-            title: "Lunch Break",
-            speakers: "N/A",
-          },
-          {
-            timestart: "01:00 PM",
-            timeend: "03:00 PM",
-            title: "Final Workshop",
-            speakers: "Catherine White",
-          },
-          {
-            timestart: "03:00 PM",
-            timeend: "04:00 PM",
-            title: "Closing Remarks",
-            speakers: "Daniel Martinez",
           },
         ],
       },

@@ -3,6 +3,33 @@
 import { MapPin, Calendar, Mic2 } from "lucide-react";
 
 export function About() {
+  const conferences = [
+    {
+      title: "1st ICoDIS | IoP Science",
+      href: "https://iopscience.iop.org/article/...",
+    },
+    {
+      title: "2nd ICoDIS | IoP Science",
+      href: "https://iopscience.iop.org/article/...",
+    },
+    {
+      title: "3rd ICoDIS (ICoDSA) | IEEE Xplore",
+      href: "https://ieeexplore.ieee.org/document/...",
+    },
+    {
+      title: "4th ICoDIS (ICoDSA) | IEEE Xplore",
+      href: "https://ieeexplore.ieee.org/document/...",
+    },
+    {
+      title: "5th ICoDIS (ICoDSA) | IEEE Xplore",
+      href: "https://ieeexplore.ieee.org/document/...",
+    },
+    {
+      title: "6th ICoDIS (ICoDSA) | IEEE Xplore",
+      href: "https://ieeexplore.ieee.org/document/...",
+    },
+  ];
+
   return (
     <div
       id="about"
@@ -35,12 +62,18 @@ export function About() {
             Papers from the previous ICoDSA indexed in Scopus:
           </p>
           <ul className="list-disc list-inside">
-            <li>1st ICoDIS | IoP Science</li>
-            <li>2nd ICoDIS | IoP Science</li>
-            <li>3rd ICoDIS (ICoDSA) | IEEE Xplore</li>
-            <li>4th ICoDIS (ICoDSA) | IEEE Xplore</li>
-            <li>5th ICoDIS (ICoDSA) | IEEE Xplore</li>
-            <li>6th ICoDIS (ICoDSA) | IEEE Xplore</li>
+            {conferences.map((conference, index) => (
+              <li key={index}>
+                <a
+                  href={conference.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  {conference.title}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="md:w-1/3">
