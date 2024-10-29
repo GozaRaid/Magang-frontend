@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,15 +7,18 @@ import {
   scheduleSectionSchema,
   scheduleItemSchema,
 } from "@/lib/validationSchema";
+import { useAddScheduleSection } from "@/features/dashboard/schedule/useAddScheduleSection";
+import { useDeleteScheduleSection } from "@/features/dashboard/schedule/useDeteleScheduleSection";
+import { useToast } from "@/hooks/use-toast";
 
-export function ScheduleSection({
-  event,
-  editMode,
-  setEvents,
-  selectedEventId,
-  setIsValid,
-}) {
+export const ScheduleSection = forwardRef(function ScheduleSection(
+  { event, editMode, setEvents, selectedEventId, setIsValid },
+  ref
+) {
+  const toast = useToast;
   const [errors, setErrors] = useState({});
+  const addScheduleSection = useAddScheduleSection();
+  const deleteScheduleSection = useDeleteScheduleSection();
 
   const validateScheduleItem = (item) => {
     try {
@@ -185,6 +188,31 @@ export function ScheduleSection({
     validateAllSchedule(event.schedule);
   }, [event.schedule, setIsValid]);
 
+  const handleSubmit = async () => {
+    try {
+      await deleteScheduleSection.mutateAsync();
+
+      await addScheduleSection.mutateAsync({
+        schedule: event.schedule,
+      });
+
+      toast.toast({
+        title: "Success",
+        description: "Schedule section updated successfully",
+      });
+    } catch (error) {
+      toast.toast({
+        title: "Error",
+        description: error.message || "Failed to update schedule section",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
+
   return (
     <section className="mb-12">
       <Card>
@@ -341,4 +369,4 @@ export function ScheduleSection({
       </Card>
     </section>
   );
-}
+});
