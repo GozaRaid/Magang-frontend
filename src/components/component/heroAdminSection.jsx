@@ -1,14 +1,19 @@
-import { useState, useEffect, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
 import { heroSectionSchema } from "@/lib/validationSchema";
-import { useDeleteHeroSection } from "@/features/dashboard/useDeleteHeroSection";
-import { useAddHeroSection } from "@/features/dashboard/useAddHeroSection";
+import { useDeleteHeroSection } from "@/features/dashboard/hero/useDeleteHeroSection";
+import { useAddHeroSection } from "@/features/dashboard/hero/useAddHeroSection";
 import { useToast } from "@/hooks/use-toast";
-import { forwardRef, useImperativeHandle } from "react";
 
 export const HeroSection = forwardRef(function HeroSection(
   { event, editMode, handleInputChange, setIsValid },

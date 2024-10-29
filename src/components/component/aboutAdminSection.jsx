@@ -1,19 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { aboutSectionSchema } from "@/lib/validationSchema";
+import { useDeleteAboutSection } from "@/features/dashboard/about/useDeleteAboutSection";
+import { useAddAboutSection } from "@/features/dashboard/about/useAddAboutSection";
+import { useToast } from "@/hooks/use-toast";
 
-export function AboutSection({
-  event,
-  editMode,
-  handleInputChange,
-  setIsValid,
-}) {
+export const AboutSection = forwardRef(function AboutSection(
+  { event, editMode, handleInputChange, setIsValid },
+  ref
+) {
+  const toast = useToast();
   const [errors, setErrors] = useState({});
   const [conferences, setConferences] = useState(event.conferences || []);
+  const deleteAboutSection = useDeleteAboutSection();
+  const addAboutSection = useAddAboutSection();
 
   const splitTextIntoParagraphs = (text) => {
     return text.split("\n\n").filter((paragraph) => paragraph.trim() !== "");
@@ -94,7 +98,7 @@ export function AboutSection({
   };
 
   const addConference = () => {
-    const newConference = { title: "", href: "" };
+    const newConference = { title: "", conference_url: "" };
     const updatedConferences = [...conferences, newConference];
 
     // Update local state
@@ -139,6 +143,32 @@ export function AboutSection({
       setIsValid(isValid);
     }
   }, [editMode, event, setIsValid]);
+
+  const handleSubmit = async () => {
+    try {
+      await deleteAboutSection.mutateAsync();
+      await addAboutSection.mutateAsync({
+        aboutDescription: event.about,
+        conferences: conferences,
+        where: event.where,
+        who: event.who,
+      });
+      toast.toast({
+        title: "Success",
+        description: "About section updated successfully",
+      });
+    } catch (error) {
+      toast.toast({
+        title: "Error",
+        description: error.message || "Failed to update about section",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
 
   return (
     <section className="mb-12">
@@ -187,20 +217,24 @@ export function AboutSection({
                       </p>
                     )}
                     <Input
-                      value={conference.href}
+                      value={conference.conference_url}
                       onChange={(e) =>
-                        handleConferenceChange(index, "href", e.target.value)
+                        handleConferenceChange(
+                          index,
+                          "conference_url",
+                          e.target.value
+                        )
                       }
                       className={`flex-1 mr-2 ${
-                        errors.conferences?.[index]?.href
+                        errors.conferences?.[index]?.conference_url
                           ? "border-red-500"
                           : ""
                       }`}
                       placeholder="Conference URL"
                     />
-                    {errors.conferences?.[index]?.href && (
+                    {errors.conferences?.[index]?.conference_url && (
                       <p className="mt-1 text-sm text-red-500">
-                        {errors.conferences[index].href}
+                        {errors.conferences[index].conference_url}
                       </p>
                     )}
                     <Button
@@ -261,7 +295,7 @@ export function AboutSection({
                   {conferences.map((conference, index) => (
                     <li key={index}>
                       <a
-                        href={conference.href}
+                        href={conference.conference_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:underline"
@@ -287,4 +321,4 @@ export function AboutSection({
       </Card>
     </section>
   );
-}
+});

@@ -1,12 +1,11 @@
 import { axiosInstance } from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-export const useDeleteHeroSection = () => {
+export const useDeleteAboutSection = () => {
   return useMutation({
     mutationFn: async () => {
-      axiosInstance.defaults.withCredentials = true;
       try {
-        const response = await axiosInstance.delete("/hero", {
+        const response = await axiosInstance.delete("/about", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
@@ -19,7 +18,7 @@ export const useDeleteHeroSection = () => {
       }
     },
     onSuccess: () => {
-      console.log("Hero section deleted successfully");
+      console.log("About section deleted successfully");
     },
   });
 };

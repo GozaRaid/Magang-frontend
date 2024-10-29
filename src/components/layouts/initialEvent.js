@@ -11,27 +11,27 @@ export const initialEvents = [
     conferences: [
       {
         title: "1st ICoDIS | IoP Science",
-        href: "https://iopscience.iop.org/article/...",
+        conference_url: "https://iopscience.iop.org/article/...",
       },
       {
         title: "2nd ICoDIS | IoP Science",
-        href: "https://iopscience.iop.org/article/...",
+        conference_url: "https://iopscience.iop.org/article/...",
       },
       {
         title: "3rd ICoDIS (ICoDSA) | IEEE Xplore",
-        href: "https://ieeexplore.ieee.org/document/...",
+        conference_url: "https://ieeexplore.ieee.org/document/...",
       },
       {
         title: "4th ICoDIS (ICoDSA) | IEEE Xplore",
-        href: "https://ieeexplore.ieee.org/document/...",
+        conference_url: "https://ieeexplore.ieee.org/document/...",
       },
       {
         title: "5th ICoDIS (ICoDSA) | IEEE Xplore",
-        href: "https://ieeexplore.ieee.org/document/...",
+        conference_url: "https://ieeexplore.ieee.org/document/...",
       },
       {
         title: "6th ICoDIS (ICoDSA) | IEEE Xplore",
-        href: "https://ieeexplore.ieee.org/document/...",
+        conference_url: "https://ieeexplore.ieee.org/document/...",
       },
     ],
     where: "Telkom University",

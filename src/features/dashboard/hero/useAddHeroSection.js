@@ -4,8 +4,6 @@ import { useMutation } from "@tanstack/react-query";
 export const useAddHeroSection = () => {
   return useMutation({
     mutationFn: async ({ title, city, image }) => {
-      console.log(title, city, image);
-      axiosInstance.defaults.withCredentials = true;
       try {
         const response = await axiosInstance.post(
           "/hero",
