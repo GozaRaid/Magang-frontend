@@ -1,17 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MapPin } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { locationSectionSchema } from "@/lib/validationSchema";
+import { useToast } from "@/hooks/use-toast";
+import { useAddLocationSection } from "@/features/dashboard/location/useAddLocationSection";
+import { useDeleteLocationSection } from "@/features/dashboard/location/useDeleteLocationSection";
 
-export function LocationSection({
-  event,
-  editMode,
-  handleInputChange,
-  setIsValid,
-}) {
+export const LocationSection = forwardRef(function LocationSection(
+  { event, editMode, handleInputChange, setIsValid },
+  ref
+) {
   const [error, setError] = useState("");
+  const toast = useToast();
+  const addLocationSection = useAddLocationSection();
+  const deleteLocationSection = useDeleteLocationSection();
 
   const validateLocation = (url) => {
     try {
@@ -36,6 +40,27 @@ export function LocationSection({
       setIsValid(isValid);
     }
   }, [editMode, event.map_url, setIsValid]);
+
+  const handleSubmit = async () => {
+    try {
+      await deleteLocationSection.mutateAsync();
+      await addLocationSection.mutateAsync({ map_url: event.map_url });
+      toast.toast({
+        title: "Success",
+        description: "Location section updated successfully",
+      });
+    } catch (error) {
+      toast.toast({
+        title: "Error",
+        description: error.message || "Failed to update location section",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
 
   return (
     <section className="mb-12">
@@ -81,4 +106,4 @@ export function LocationSection({
       </Card>
     </section>
   );
-}
+});
