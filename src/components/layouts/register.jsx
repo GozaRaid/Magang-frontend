@@ -19,23 +19,19 @@ import {
 } from "@/components/ui/card";
 
 // Define the Zod validation schema
-const registerValidationSchema = z.object({
-  username: z.string().min(1, { message: "Username is required" }),
-  keyword: z.string().min(1, { message: "Keyword is required" }),
-  password: z.string().min(1, { message: "Password is required" }),
-  reenterPassword: z
-    .string()
-    .min(1, { message: "Re-entering your password is required" }),
-});
-
-// Add custom validation for password match
-registerValidationSchema.refine(
-  (data) => data.password === data.reenterPassword,
-  {
+const registerValidationSchema = z
+  .object({
+    username: z.string().min(1, { message: "Username is required" }),
+    keyword: z.string().min(1, { message: "Keyword is required" }),
+    password: z.string().min(1, { message: "Password is required" }),
+    reenterPassword: z
+      .string()
+      .min(1, { message: "Re-entering your password is required" }),
+  })
+  .refine((data) => data.password === data.reenterPassword, {
     message: "Passwords must match",
     path: ["reenterPassword"],
-  }
-);
+  });
 
 export function Register() {
   const router = useRouter();
@@ -131,7 +127,12 @@ export function Register() {
 
               <div className="space-y-2">
                 <Label htmlFor="keyword">Keyword</Label>
-                <Field id="keyword" name="keyword" className="input-custom" />
+                <Field
+                  id="keyword"
+                  name="keyword"
+                  type="password"
+                  className="input-custom"
+                />
                 {errors.keyword && touched.keyword && (
                   <div className="text-red-500">{errors.keyword}</div>
                 )}

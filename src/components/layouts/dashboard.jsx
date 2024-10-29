@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Home,
@@ -43,10 +43,16 @@ export function Dashboard() {
     handleInputChange,
     handleDateChange,
     handleDiscardChanges,
-    handleSave,
     setEditMode,
     setEvents,
   } = useEventManagement();
+
+  // Add refs for each section that needs to handle submit
+  const heroSectionRef = useRef(null);
+  const aboutSectionRef = useRef(null);
+  const scheduleSectionRef = useRef(null);
+  const speakersSectionRef = useRef(null);
+  const locationSectionRef = useRef(null);
   const router = useRouter();
   const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState("home");
@@ -54,6 +60,59 @@ export function Dashboard() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [nextSection, setNextSection] = useState(null);
   const [isFormValid, setIsFormValid] = useState(true);
+
+  const getActiveRef = (sectionName) => {
+    switch (sectionName) {
+      case "home":
+        return heroSectionRef;
+      case "about":
+        return aboutSectionRef;
+      case "schedule":
+        return scheduleSectionRef;
+      case "speakers":
+        return speakersSectionRef;
+      case "location":
+        return locationSectionRef;
+      default:
+        return null;
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      // Handle different sections
+      switch (activeSection) {
+        case "home":
+          if (heroSectionRef.current) {
+            await heroSectionRef.current.handleSubmit();
+          }
+          break;
+        case "about":
+          if (aboutSectionRef.current) {
+            await aboutSectionRef.current.handleSubmit();
+          }
+          break;
+        case "schedule":
+          if (scheduleSectionRef.current) {
+            await scheduleSectionRef.current.handleSubmit();
+          }
+          break;
+        case "speakers":
+          if (speakersSectionRef.current) {
+            await speakersSectionRef.current.handleSubmit();
+          }
+          break;
+        case "location":
+          if (locationSectionRef.current) {
+            await locationSectionRef.current.handleSubmit();
+          }
+          break;
+      }
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
+  };
 
   const sections = [
     { name: "Home", icon: Home, component: HeroSection },
@@ -65,8 +124,12 @@ export function Dashboard() {
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
 
-  const handleKeepChanges = () => {
-    editMode ? handleSave() : handleDiscardChanges();
+  const handleKeepChanges = async () => {
+    if (editMode) {
+      await handleSave();
+    } else {
+      handleDiscardChanges();
+    }
     setActiveSection(nextSection);
     setIsAlertOpen(false);
   };
@@ -220,6 +283,7 @@ export function Dashboard() {
         <main className="p-6">
           {ActiveSectionComponent && (
             <ActiveSectionComponent
+              ref={getActiveRef(activeSection)}
               event={selectedEvent}
               editMode={editMode}
               handleInputChange={handleInputChange}

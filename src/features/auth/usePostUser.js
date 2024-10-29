@@ -20,10 +20,10 @@ export const usePostUser = () => {
         );
       }
     },
-    onSuccess: (data) => {
+    onSuccess: (variables) => {
       postAuthMutation.mutate({
-        username: data.username,
-        password: data.password,
+        username: variables.username,
+        password: variables.password,
       });
     },
   });

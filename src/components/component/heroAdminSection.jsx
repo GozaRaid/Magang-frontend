@@ -5,15 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
 import { heroSectionSchema } from "@/lib/validationSchema";
+import { useDeleteHeroSection } from "@/features/dashboard/useDeleteHeroSection";
+import { useAddHeroSection } from "@/features/dashboard/useAddHeroSection";
+import { useToast } from "@/hooks/use-toast";
+import { forwardRef, useImperativeHandle } from "react";
 
-export function HeroSection({
-  event,
-  editMode,
-  handleInputChange,
-  setIsValid,
-}) {
+export const HeroSection = forwardRef(function HeroSection(
+  { event, editMode, handleInputChange, setIsValid },
+  ref
+) {
+  const toast = useToast();
   const fileInputRef = useRef(null);
   const [errors, setErrors] = useState({});
+  const deleteHeroSection = useDeleteHeroSection();
+  const addHeroSection = useAddHeroSection();
 
   const triggerHeroImageUpload = () => {
     fileInputRef.current?.click();
@@ -36,7 +41,7 @@ export function HeroSection({
     }
   };
 
-  const handleChange = (e, field) => {
+  const handleChange = async (e, field) => {
     if (field === "image") {
       const file = e.target.files[0];
       if (file) {
@@ -53,7 +58,6 @@ export function HeroSection({
     if (editMode) {
       const isValid = Object.keys(heroSectionSchema.shape).every((field) => {
         if (field === "image" && typeof event[field] === "string") {
-          // Skip validation for image if it's a string (URL)
           return true;
         }
         return validateField(field, event[field]);
@@ -61,6 +65,42 @@ export function HeroSection({
       setIsValid(isValid);
     }
   }, [editMode, event, setIsValid]);
+
+  // Submit handler for the edit mutation
+  const handleSubmit = async () => {
+    try {
+      // Delete existing hero section first
+      await deleteHeroSection.mutateAsync();
+
+      // Then create new hero section with updated data
+      const formData = new FormData();
+
+      if (event.image instanceof File) {
+        formData.append("image", event.image);
+      }
+
+      await addHeroSection.mutateAsync({
+        title: event.title,
+        city: event.city,
+        image: event.image,
+      });
+
+      toast.toast({
+        title: "Success",
+        description: "Hero section updated successfully",
+      });
+    } catch (error) {
+      toast.toast({
+        title: "Error",
+        description: error.message || "Failed to update hero section",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
 
   return (
     <Card className="mb-12">
@@ -114,6 +154,9 @@ export function HeroSection({
                     <Button
                       onClick={triggerHeroImageUpload}
                       variant="secondary"
+                      disabled={
+                        addHeroSection.isLoading || deleteHeroSection.isLoading
+                      }
                     >
                       <Upload className="w-4 h-4 mr-2" />
                       Change Image
@@ -155,4 +198,4 @@ export function HeroSection({
       </CardContent>
     </Card>
   );
-}
+});
