@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 export const useAddSpeakersSection = () => {
   return useMutation({
     mutationFn: async ({ speakers, images }) => {
+      console.log(speakers, images);
       try {
         const response = await axiosInstance.post(
           "/speakers",
@@ -14,7 +15,7 @@ export const useAddSpeakersSection = () => {
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-              "content-type": "multipart/form-data",
+              "Content-Type": "multipart/form-data",
             },
           }
         );

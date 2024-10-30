@@ -1,19 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageIcon, Plus, Minus } from "lucide-react";
 import { speakersSectionSchema } from "@/lib/validationSchema";
+import { useToast } from "@/hooks/use-toast";
+import { useDeleteSpeakersSection } from "@/features/dashboard/speakers/useDeleteSpeakersSection";
+import { useAddSpeakersSection } from "@/features/dashboard/speakers/useAddSpeakersSection";
 
-export function SpeakersSection({
-  event,
-  editMode,
-  setEvents,
-  selectedEventId,
-  setIsValid,
-}) {
+export const SpeakersSection = forwardRef(function SpeakersSection(
+  { event, editMode, setEvents, selectedEventId, setIsValid },
+  ref
+) {
   const [errors, setErrors] = useState([]);
+  const toast = useToast();
+  const deleteSpeakerSection = useDeleteSpeakersSection();
+  const addSpeakerSection = useAddSpeakersSection();
 
   const validateSpeaker = (speaker, index) => {
     try {
@@ -90,6 +93,40 @@ export function SpeakersSection({
     );
     setErrors((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const handleSubmit = async () => {
+    try {
+      const speakers = {
+        speakers: event.speakers.map(({ name, bio }) => ({ name, bio })),
+      };
+
+      const images = Object.fromEntries(
+        event.speakers.map((speaker, index) => [
+          `image_${index}`,
+          speaker.image, // Store the image path directly
+        ])
+      );
+
+      await deleteSpeakerSection.mutateAsync();
+      await addSpeakerSection.mutateAsync({ ...speakers, ...images });
+
+      toast.toast({
+        title: "Success",
+        description: "Speakers section updated successfully",
+        variant: "success",
+      });
+    } catch (error) {
+      toast.toast({
+        title: "Error",
+        description: error.message || "Failed to update speakers section",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
 
   useEffect(() => {
     if (editMode) {
@@ -211,4 +248,4 @@ export function SpeakersSection({
       </Card>
     </section>
   );
-}
+});
