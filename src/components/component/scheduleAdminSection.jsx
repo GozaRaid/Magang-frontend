@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Clock, Plus, Minus } from "lucide-react";
+import { Clock, Plus, Minus, ConstructionIcon } from "lucide-react";
 import {
   scheduleSectionSchema,
   scheduleItemSchema,
@@ -10,20 +10,33 @@ import {
 import { useAddScheduleSection } from "@/features/dashboard/schedule/useAddScheduleSection";
 import { useDeleteScheduleSection } from "@/features/dashboard/schedule/useDeteleScheduleSection";
 import { useToast } from "@/hooks/use-toast";
+import { useFetchScheduleSection } from "@/features/dashboard/schedule/useFetchScheduleSection";
 
 export const ScheduleSection = forwardRef(function ScheduleSection(
-  { event, editMode, setEvents, selectedEventId, setIsValid },
+  { event, editMode, setEvent, setEvents, selectedEventId, setIsValid },
   ref
 ) {
-  const toast = useToast;
+  const { toast } = useToast();
   const [errors, setErrors] = useState({});
   const addScheduleSection = useAddScheduleSection();
   const deleteScheduleSection = useDeleteScheduleSection();
+  const { data, isLoading, error } = useFetchScheduleSection();
+  const [dataExist, setDataExist] = useState(false);
+
+  useEffect(() => {
+    if (data && !dataExist) {
+      setEvent((prev) => ({
+        ...prev,
+        schedule: data.schedule,
+      }));
+      setDataExist(true);
+    }
+  }, [data]);
 
   const validateScheduleItem = (item) => {
     try {
       scheduleItemSchema.parse(item);
-      return null; // No errors
+      return null;
     } catch (error) {
       return error.errors.reduce((acc, err) => {
         acc[err.path[0]] = err.message;
@@ -35,7 +48,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
   const validateSchedule = (schedule) => {
     try {
       scheduleSectionSchema.parse(schedule);
-      return null; // No errors
+      return null;
     } catch (error) {
       return error.errors.reduce((acc, err) => {
         acc[err.path.join(".")] = err.message;
@@ -56,9 +69,17 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
         : day
     );
 
-    const updatedEvent = { ...event, schedule: updatedSchedule };
+    setEvent({
+      ...event,
+      schedule: updatedSchedule,
+    });
+
     setEvents((prevEvents) =>
-      prevEvents.map((e) => (e.id === selectedEventId ? updatedEvent : e))
+      prevEvents.map((event) =>
+        event.id === selectedEventId
+          ? { ...event, schedule: updatedSchedule }
+          : event
+      )
     );
 
     validateAllSchedule(updatedSchedule);
@@ -73,24 +94,21 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
           timeend: "10:00 AM",
           title: "New Event",
           speakers: "TBA",
+          parallelSession: "",
         },
       ],
     };
     const updatedSchedule = [...event.schedule, newDay];
-    setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
-      )
-    );
+    setEvent({
+      ...event,
+      schedule: updatedSchedule,
+    });
 
-    validateAllSchedule(updatedSchedule);
-  };
-
-  const removeDay = (index) => {
-    const updatedSchedule = event.schedule.filter((_, i) => i !== index);
     setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
+      prevEvents.map((event) =>
+        event.id === selectedEventId
+          ? { ...event, schedule: updatedSchedule }
+          : event
       )
     );
 
@@ -103,13 +121,42 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
       timeend: "",
       title: "",
       speakers: "",
+      parallelSession: "",
     };
+
     const updatedSchedule = event.schedule.map((day, index) =>
       index === dayIndex ? { ...day, items: [...day.items, newItem] } : day
     );
+
+    setEvent({
+      ...event,
+      schedule: updatedSchedule,
+    });
+
     setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
+      prevEvents.map((event) =>
+        event.id === selectedEventId
+          ? { ...event, schedule: updatedSchedule }
+          : event
+      )
+    );
+
+    validateAllSchedule(updatedSchedule);
+  };
+
+  // Rest of the existing helper functions remain the same
+  const removeDay = (index) => {
+    const updatedSchedule = event.schedule.filter((_, i) => i !== index);
+    setEvent({
+      ...event,
+      schedule: updatedSchedule,
+    });
+
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
+        event.id === selectedEventId
+          ? { ...event, schedule: updatedSchedule }
+          : event
       )
     );
 
@@ -122,9 +169,17 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
         ? { ...day, items: day.items.filter((_, i) => i !== itemIndex) }
         : day
     );
+
+    setEvent({
+      ...event,
+      schedule: updatedSchedule,
+    });
+
     setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
+      prevEvents.map((event) =>
+        event.id === selectedEventId
+          ? { ...event, schedule: updatedSchedule }
+          : event
       )
     );
 
@@ -137,23 +192,19 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
         ? {
             ...day,
             date: value,
-            items:
-              day.items.length === 0
-                ? [
-                    {
-                      timestart: "09:00 AM",
-                      timeend: "10:00 AM",
-                      title: "New Event",
-                      speakers: "TBA",
-                    },
-                  ]
-                : day.items,
           }
         : day
     );
+
+    setEvent((prev) => {
+      return { ...prev, schedule: updatedSchedule };
+    });
+
     setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.id === selectedEventId ? { ...e, schedule: updatedSchedule } : e
+      prevEvents.map((event) =>
+        event.id === selectedEventId
+          ? { ...event, schedule: updatedSchedule }
+          : event
       )
     );
 
@@ -196,12 +247,12 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
         schedule: event.schedule,
       });
 
-      toast.toast({
+      toast({
         title: "Success",
         description: "Schedule section updated successfully",
       });
     } catch (error) {
-      toast.toast({
+      toast({
         title: "Error",
         description: error.message || "Failed to update schedule section",
         variant: "destructive",
@@ -217,7 +268,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
     <section className="mb-12">
       <Card>
         <CardHeader className="p-4">
-          <CardTitle>Event Schedule</CardTitle>
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
           {event.schedule.map((day, dayIndex) => (
@@ -277,7 +328,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                                 e.target.value
                               )
                             }
-                            className="w-1/4 mr-2"
+                            className="w-1/6 mr-2"
                             placeholder="Start Time"
                           />
                           <Input
@@ -291,7 +342,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                                 e.target.value
                               )
                             }
-                            className="w-1/4 mr-2"
+                            className="w-1/6 mr-2"
                             placeholder="End Time"
                           />
                           <Input
@@ -304,8 +355,21 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                                 e.target.value
                               )
                             }
-                            className="w-3/4"
+                            className="w-1/3 mr-2"
                             placeholder="Event Title"
+                          />
+                          <Input
+                            value={item.parallelSession}
+                            onChange={(e) =>
+                              handleScheduleChange(
+                                dayIndex,
+                                itemIndex,
+                                "parallelSession",
+                                e.target.value
+                              )
+                            }
+                            className="w-1/6 mr-2"
+                            placeholder="Parallel Session"
                           />
                           <Button
                             onClick={() =>
@@ -350,6 +414,11 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                         <span className="font-semibold">
                           {item.timestart} - {item.timeend}
                         </span>
+                        {item.parallelSession && (
+                          <span className="px-2 py-1 ml-4 text-sm bg-gray-100 rounded-md">
+                            Session: {item.parallelSession}
+                          </span>
+                        )}
                       </div>
                       <h4 className="font-bold">{item.title}</h4>
                       <p>{item.speakers}</p>

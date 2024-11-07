@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 export const useAddHeroSection = () => {
   return useMutation({
-    mutationFn: async ({ title, city, image }) => {
+    mutationFn: async ({ title, city, image, id }) => {
       try {
         const response = await axiosInstance.post(
           "/hero",
@@ -11,6 +11,7 @@ export const useAddHeroSection = () => {
             title,
             city,
             image,
+            id,
           },
           {
             headers: {
@@ -25,6 +26,9 @@ export const useAddHeroSection = () => {
           error.response?.data?.message || error.message || "An error occurred"
         );
       }
+    },
+    onSuccess: (data) => {
+      console.log(data);
     },
   });
 };

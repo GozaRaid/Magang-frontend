@@ -1,17 +1,14 @@
 import { axiosInstance } from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-export const useAddAboutSection = () => {
+export const useAddPararelSession = () => {
   return useMutation({
-    mutationFn: async ({ aboutDescription, conferences, where, who }) => {
+    mutationFn: async ({ parallelSessions }) => {
       try {
         const response = await axiosInstance.post(
-          "/about",
+          "/pararel-sessions",
           {
-            aboutDescription,
-            conferences,
-            where,
-            who,
+            parallelSessions,
           },
           {
             headers: {
@@ -25,9 +22,6 @@ export const useAddAboutSection = () => {
           error.response?.data?.message || error.message || "An error occurred"
         );
       }
-    },
-    onSuccess: (data) => {
-      console.log(data);
     },
   });
 };

@@ -8,16 +8,31 @@ import { aboutSectionSchema } from "@/lib/validationSchema";
 import { useDeleteAboutSection } from "@/features/dashboard/about/useDeleteAboutSection";
 import { useAddAboutSection } from "@/features/dashboard/about/useAddAboutSection";
 import { useToast } from "@/hooks/use-toast";
+import { useFetchAboutSection } from "@/features/dashboard/about/useFetchAboutSection";
 
 export const AboutSection = forwardRef(function AboutSection(
-  { event, editMode, handleInputChange, setIsValid },
+  { event, editMode, setEvent, setIsValid },
   ref
 ) {
-  const toast = useToast();
+  const { toast } = useToast();
   const [errors, setErrors] = useState({});
   const [conferences, setConferences] = useState(event.conferences || []);
   const deleteAboutSection = useDeleteAboutSection();
   const addAboutSection = useAddAboutSection();
+  const { data, isLoading, error } = useFetchAboutSection();
+
+  useEffect(() => {
+    if (data) {
+      setEvent((prev) => ({
+        ...prev,
+        about: data.aboutDescription,
+        conferences: data.conferences,
+        where: data.where,
+        who: data.who,
+        id: data.id,
+      }));
+    }
+  }, [data]);
 
   const splitTextIntoParagraphs = (text) => {
     return text.split("\n\n").filter((paragraph) => paragraph.trim() !== "");
@@ -36,14 +51,13 @@ export const AboutSection = forwardRef(function AboutSection(
         newErrors[field] = error.errors[0].message;
         return newErrors;
       });
-      console.error(error.errors[0].message);
       return false;
     }
   };
 
   const validateConferenceField = (index, field, value) => {
     try {
-      aboutSectionSchema.shape.conferences.shape[field].parse(value);
+      aboutSectionSchema.shape[field].parse(value);
       setErrors((prev) => {
         const newErrors = { ...prev };
         if (newErrors.conferences) {
@@ -65,9 +79,15 @@ export const AboutSection = forwardRef(function AboutSection(
         };
         return newErrors;
       });
-      console.error(error.errors[0].message);
       return false;
     }
+  };
+
+  const handleInputChange = (e, field) => {
+    setEvent((prev) => ({
+      ...prev,
+      [field]: e.target.value,
+    }));
   };
 
   const handleChange = (e, field) => {
@@ -76,7 +96,7 @@ export const AboutSection = forwardRef(function AboutSection(
   };
 
   const handleConferenceChange = (index, field, value) => {
-    const updatedConferences = [...conferences];
+    const updatedConferences = [...event.conferences];
     updatedConferences[index][field] = value;
 
     // Update local state
@@ -153,12 +173,12 @@ export const AboutSection = forwardRef(function AboutSection(
         where: event.where,
         who: event.who,
       });
-      toast.toast({
+      toast({
         title: "Success",
         description: "About section updated successfully",
       });
     } catch (error) {
-      toast.toast({
+      toast({
         title: "Error",
         description: error.message || "Failed to update about section",
         variant: "destructive",
@@ -197,7 +217,7 @@ export const AboutSection = forwardRef(function AboutSection(
               </div>
               <div className="mb-4">
                 <Label>Conferences</Label>
-                {conferences.map((conference, index) => (
+                {event.conferences.map((conference, index) => (
                   <div key={index} className="flex items-center mb-2">
                     <Input
                       value={conference.title}
@@ -292,7 +312,7 @@ export const AboutSection = forwardRef(function AboutSection(
               <div className="mb-4">
                 <h3 className="text-xl font-semibold ">Conferences</h3>
                 <ul className="list-disc list-inside">
-                  {conferences.map((conference, index) => (
+                  {event.conferences.map((conference, index) => (
                     <li key={index}>
                       <a
                         href={conference.conference_url}
@@ -309,9 +329,6 @@ export const AboutSection = forwardRef(function AboutSection(
 
               <h3 className="mb-2 text-xl font-semibold">Where</h3>
               <p className="mb-4">{event.where}</p>
-
-              <h3 className="mb-2 text-xl font-semibold">When</h3>
-              <p className="mb-4">{event.when}</p>
 
               <h3 className="mb-2 text-xl font-semibold">Who</h3>
               <p className="mb-4">{event.who}</p>

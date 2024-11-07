@@ -6,17 +6,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImageIcon, Plus, Minus } from "lucide-react";
 import { speakersSectionSchema } from "@/lib/validationSchema";
 import { useToast } from "@/hooks/use-toast";
-import { useDeleteSpeakersSection } from "@/features/dashboard/speakers/useDeleteSpeakersSection";
+import { useDeleteSpeakersByIdSection } from "@/features/dashboard/speakers/useDeleteSpeakersByIdSection";
 import { useAddSpeakersSection } from "@/features/dashboard/speakers/useAddSpeakersSection";
+import { useFetchSpeakersSection } from "@/features/dashboard/speakers/useFetchSpeakersSection";
+import { useEditSpeakersByIdSection } from "@/features/dashboard/speakers/useEditSpeakersByIdSection";
 
 export const SpeakersSection = forwardRef(function SpeakersSection(
-  { event, editMode, setEvents, selectedEventId, setIsValid },
+  { event, editMode, setEvents, selectedEventId, setIsValid, setEvent },
   ref
 ) {
   const [errors, setErrors] = useState([]);
-  const toast = useToast();
-  const deleteSpeakerSection = useDeleteSpeakersSection();
+  const { toast } = useToast();
+  const deleteSpeakerSectionById = useDeleteSpeakersByIdSection();
   const addSpeakerSection = useAddSpeakersSection();
+  const editSpeakerByIdSection = useEditSpeakersByIdSection();
+  const { data, isLoading } = useFetchSpeakersSection();
+
+  useEffect(() => {
+    if (data) {
+      setEvent((prev) => ({
+        ...prev,
+        speakers: data.speakers,
+      }));
+    }
+  }, [data, setEvent]);
 
   const validateSpeaker = (speaker, index) => {
     try {
@@ -41,16 +54,23 @@ export const SpeakersSection = forwardRef(function SpeakersSection(
   };
 
   const handleSpeakerChange = (index, field, value) => {
+    const updatedSpeakers = event.speakers.map((speaker, i) =>
+      i === index ? { ...speaker, [field]: value } : speaker
+    );
+
+    setEvent((prev) => ({
+      ...prev,
+      speakers: updatedSpeakers,
+    }));
+
     setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === selectedEventId
+      prevEvents.map((evt) =>
+        evt.id === selectedEventId
           ? {
-              ...event,
-              speakers: event.speakers.map((speaker, i) =>
-                i === index ? { ...speaker, [field]: value } : speaker
-              ),
+              ...evt,
+              speakers: updatedSpeakers,
             }
-          : event
+          : evt
       )
     );
 
@@ -63,60 +83,114 @@ export const SpeakersSection = forwardRef(function SpeakersSection(
   };
 
   const addSpeaker = () => {
+    const newSpeaker = {
+      id: `temp-${Date.now()}`, // Add temporary ID for new speakers
+      name: "",
+      bio: "",
+      image: "",
+    };
+
+    setEvent((prev) => ({
+      ...prev,
+      speakers: [...prev.speakers, newSpeaker],
+    }));
+
     setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === selectedEventId
+      prevEvents.map((evt) =>
+        evt.id === selectedEventId
           ? {
-              ...event,
-              speakers: [
-                ...event.speakers,
-                {
-                  name: "",
-                  bio: "",
-                  image: "",
-                },
-              ],
+              ...evt,
+              speakers: [...evt.speakers, newSpeaker],
             }
-          : event
+          : evt
       )
     );
     setErrors((prev) => [...prev, {}]);
   };
 
-  const removeSpeaker = (index) => {
+  const removeSpeaker = async (index) => {
+    const speakerToRemove = event.speakers[index];
+
+    // If the speaker has an ID and it's not a temporary one, delete it from the backend
+    if (speakerToRemove.id && !speakerToRemove.id.startsWith("temp-")) {
+      try {
+        await deleteSpeakerSectionById.mutateAsync({
+          id: speakerToRemove.id,
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to remove speaker",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    const updatedSpeakers = event.speakers.filter((_, i) => i !== index);
+
+    setEvent((prev) => ({
+      ...prev,
+      speakers: updatedSpeakers,
+    }));
+
     setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === selectedEventId
-          ? { ...event, speakers: event.speakers.filter((_, i) => i !== index) }
-          : event
+      prevEvents.map((evt) =>
+        evt.id === selectedEventId ? { ...evt, speakers: updatedSpeakers } : evt
       )
     );
+
     setErrors((prev) => prev.filter((_, i) => i !== index));
+
+    toast({
+      title: "Success",
+      description: "Speaker removed successfully",
+      variant: "success",
+    });
   };
 
   const handleSubmit = async () => {
     try {
-      const speakers = {
-        speakers: event.speakers.map(({ name, bio }) => ({ name, bio })),
-      };
-
-      const images = Object.fromEntries(
-        event.speakers.map((speaker, index) => [
-          `image_${index}`,
-          speaker.image, // Store the image path directly
-        ])
+      const speakersToUpdate = event.speakers.map(
+        ({ name, bio, image, id }) => ({
+          id,
+          name,
+          bio,
+          image,
+        })
       );
 
-      await deleteSpeakerSection.mutateAsync();
-      await addSpeakerSection.mutateAsync({ ...speakers, ...images });
+      for (const speaker of speakersToUpdate) {
+        if (speaker.id.startsWith("temp-")) {
+          // Handle new speakers
+          const { id, ...speakerData } = speaker;
+          await addSpeakerSection.mutateAsync({
+            speaker: speakerData,
+          });
+        } else if (speaker.image instanceof File) {
+          // Handle existing speakers with new images
+          await deleteSpeakerSectionById.mutateAsync({
+            id: speaker.id,
+          });
+          await addSpeakerSection.mutateAsync({
+            speaker,
+          });
+        } else {
+          // Handle existing speakers with no changes
+          await editSpeakerByIdSection.mutateAsync({
+            id: speaker.id,
+            speaker,
+          });
+        }
+      }
 
-      toast.toast({
+      toast({
         title: "Success",
         description: "Speakers section updated successfully",
         variant: "success",
       });
     } catch (error) {
-      toast.toast({
+      toast({
         title: "Error",
         description: error.message || "Failed to update speakers section",
         variant: "destructive",
@@ -137,6 +211,10 @@ export const SpeakersSection = forwardRef(function SpeakersSection(
     }
   }, [editMode, event.speakers, setIsValid]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <section className="mb-12">
       <Card>
@@ -146,7 +224,10 @@ export const SpeakersSection = forwardRef(function SpeakersSection(
         <CardContent>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {event.speakers.map((speaker, index) => (
-              <div key={index} className="flex items-start space-x-4">
+              <div
+                key={speaker.id || index}
+                className="flex items-start space-x-4"
+              >
                 <div className="relative w-24 h-24">
                   <img
                     src={
@@ -222,7 +303,6 @@ export const SpeakersSection = forwardRef(function SpeakersSection(
                         size="sm"
                         variant="destructive"
                         className="mt-2"
-                        disabled={event.speakers.length === 1}
                       >
                         <Minus size={16} className="mr-2" />
                         Remove Speaker
@@ -249,3 +329,5 @@ export const SpeakersSection = forwardRef(function SpeakersSection(
     </section>
   );
 });
+
+export default SpeakersSection;

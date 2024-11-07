@@ -3,14 +3,14 @@ import { useMutation } from "@tanstack/react-query";
 
 export const useAddSpeakersSection = () => {
   return useMutation({
-    mutationFn: async ({ speakers, images }) => {
-      console.log(speakers, images);
+    mutationFn: async ({ speaker }) => {
       try {
         const response = await axiosInstance.post(
           "/speakers",
           {
-            speakers,
-            images,
+            name: speaker.name,
+            bio: speaker.bio,
+            image: speaker.image,
           },
           {
             headers: {

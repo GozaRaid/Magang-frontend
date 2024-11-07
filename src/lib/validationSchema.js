@@ -11,7 +11,8 @@ export const heroSectionSchema = z.object({
     .refine(
       (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
       "Only JPEG, PNG, and JPG images are allowed"
-    ),
+    )
+    .or(z.any()),
 });
 
 export const aboutSectionSchema = z.object({
@@ -19,7 +20,7 @@ export const aboutSectionSchema = z.object({
   conferences: z.array(
     z.object({
       title: z.string().min(1, "Title are required"),
-      href: z.string().url("Invalid URL"),
+      conference_url: z.string().url("Invalid URL"),
     })
   ),
   where: z.string().min(1, "Where are required"),
@@ -33,6 +34,7 @@ export const scheduleItemSchema = z.object({
   timeend: z.string().regex(timeRegex, "Invalid time format (use HH:MM AM/PM)"),
   title: z.string().min(1, "Title is required"),
   speakers: z.string().min(1, "Speakers are required"),
+  parallelSession: z.string().min(1, "Session is required"),
 });
 
 export const scheduleSectionSchema = z.object({
@@ -40,6 +42,20 @@ export const scheduleSectionSchema = z.object({
   items: z
     .array(scheduleItemSchema)
     .min(1, "At least one schedule item is required"),
+});
+
+// Define schema for a single paper
+export const paperSchema = z.object({
+  paperId: z.string().regex(/^\d+$/, "Paper ID must be a numeric"),
+  title: z.string().min(1, "Title is required"),
+  authors: z.string().min(1, "Authors are required"),
+  mode: z.enum(["Online", "Offline"]),
+});
+
+// Define schema for a single parallel session
+export const parallelSessionSchema = z.object({
+  date: z.date().min(new Date(), "Date must be in the future"),
+  name: z.string().min(1, "Session name is required"),
 });
 
 export const speakersSectionSchema = z.object({

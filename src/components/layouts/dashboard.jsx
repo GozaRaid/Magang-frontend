@@ -7,6 +7,7 @@ import {
   Users,
   Mic,
   Calendar,
+  CalendarDays,
   MapPin,
   ChevronRight,
   ChevronLeft,
@@ -31,14 +32,15 @@ import { AboutSection } from "@/components/component/aboutAdminSection";
 import { ScheduleSection } from "@/components/component/scheduleAdminSection";
 import { SpeakersSection } from "@/components/component/speakerAdminSection";
 import { LocationSection } from "@/components/component/locationAdminSection";
+import { ParalelSection } from "@/components/component/paralelAdminSection";
 import { useEventManagement } from "@/components/layouts/useEventManagement";
 import { useAuth } from "@/features/auth/AuthContext";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export function Dashboard() {
   const {
     selectedEvent,
-    selectedEventId,
+    setSelectedEvent,
     editMode,
     handleInputChange,
     handleDateChange,
@@ -47,12 +49,13 @@ export function Dashboard() {
     setEvents,
   } = useEventManagement();
 
-  // Add refs for each section that needs to handle submit
   const heroSectionRef = useRef(null);
   const aboutSectionRef = useRef(null);
   const scheduleSectionRef = useRef(null);
+  const pararelSectionRef = useRef(null);
   const speakersSectionRef = useRef(null);
   const locationSectionRef = useRef(null);
+
   const router = useRouter();
   const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState("home");
@@ -61,52 +64,20 @@ export function Dashboard() {
   const [nextSection, setNextSection] = useState(null);
   const [isFormValid, setIsFormValid] = useState(true);
 
-  const getActiveRef = (sectionName) => {
-    switch (sectionName) {
-      case "home":
-        return heroSectionRef;
-      case "about":
-        return aboutSectionRef;
-      case "schedule":
-        return scheduleSectionRef;
-      case "speakers":
-        return speakersSectionRef;
-      case "location":
-        return locationSectionRef;
-      default:
-        return null;
-    }
+  const sectionRefs = {
+    home: heroSectionRef,
+    about: aboutSectionRef,
+    schedule: scheduleSectionRef,
+    pararel: pararelSectionRef,
+    speakers: speakersSectionRef,
+    location: locationSectionRef,
   };
 
   const handleSave = async () => {
     try {
-      // Handle different sections
-      switch (activeSection) {
-        case "home":
-          if (heroSectionRef.current) {
-            await heroSectionRef.current.handleSubmit();
-          }
-          break;
-        case "about":
-          if (aboutSectionRef.current) {
-            await aboutSectionRef.current.handleSubmit();
-          }
-          break;
-        case "schedule":
-          if (scheduleSectionRef.current) {
-            await scheduleSectionRef.current.handleSubmit();
-          }
-          break;
-        case "speakers":
-          if (speakersSectionRef.current) {
-            await speakersSectionRef.current.handleSubmit();
-          }
-          break;
-        case "location":
-          if (locationSectionRef.current) {
-            await locationSectionRef.current.handleSubmit();
-          }
-          break;
+      const currentRef = sectionRefs[activeSection];
+      if (currentRef.current && currentRef.current.handleSubmit) {
+        await currentRef.current.handleSubmit();
       }
       setEditMode(false);
     } catch (error) {
@@ -114,29 +85,15 @@ export function Dashboard() {
     }
   };
 
-  const sections = [
-    { name: "Home", icon: Home, component: HeroSection },
-    { name: "About", icon: Users, component: AboutSection },
-    { name: "Schedule", icon: Calendar, component: ScheduleSection },
-    { name: "Speakers", icon: Mic, component: SpeakersSection },
-    { name: "Location", icon: MapPin, component: LocationSection },
-  ];
-
-  const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
-
-  const handleKeepChanges = async () => {
-    if (editMode) {
-      await handleSave();
-    } else {
-      handleDiscardChanges();
-    }
+  const handleDiscardAlert = () => {
+    handleDiscardChanges();
+    setEditMode(false);
     setActiveSection(nextSection);
     setIsAlertOpen(false);
   };
 
-  const handleDiscardAlert = () => {
-    handleDiscardChanges();
-    setEditMode(false);
+  const handleKeepChanges = async () => {
+    await handleSave();
     setActiveSection(nextSection);
     setIsAlertOpen(false);
   };
@@ -163,9 +120,25 @@ export function Dashboard() {
     router.push("/");
   };
 
-  const ActiveSectionComponent = sections.find(
-    (section) => section.name.toLowerCase() === activeSection
-  )?.component;
+  const ActiveSectionComponent = {
+    home: HeroSection,
+    about: AboutSection,
+    schedule: ScheduleSection,
+    pararel: ParalelSection,
+    speakers: SpeakersSection,
+    location: LocationSection,
+  }[activeSection];
+
+  const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
+
+  const sections = [
+    { name: "Home", icon: Home, key: "home" },
+    { name: "About", icon: Users, key: "about" },
+    { name: "Schedule", icon: Calendar, key: "schedule" },
+    { name: "Parallel Session", icon: CalendarDays, key: "pararel" },
+    { name: "Speakers", icon: Mic, key: "speakers" },
+    { name: "Location", icon: MapPin, key: "location" },
+  ];
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -199,13 +172,9 @@ export function Dashboard() {
         <nav className="flex-grow mt-8">
           {sections.map((section) => (
             <Button
-              key={section.name.toLowerCase()}
-              variant={
-                activeSection === section.name.toLowerCase()
-                  ? "secondary"
-                  : "ghost"
-              }
-              onClick={() => handleSectionChange(section.name.toLowerCase())}
+              key={section.key}
+              variant={activeSection === section.key ? "secondary" : "ghost"}
+              onClick={() => handleSectionChange(section.key)}
               className={`w-full justify-start mb-2 ${
                 isSidebarCollapsed ? "px-0 justify-center" : "px-4"
               }`}
@@ -244,6 +213,7 @@ export function Dashboard() {
           </Button>
         </div>
       </div>
+
       {/* Main content area */}
       <div className="flex-1 overflow-auto">
         <header className="flex items-center justify-between p-4 bg-white shadow-sm">
@@ -258,15 +228,13 @@ export function Dashboard() {
                   className="bg-green-500 hover:bg-green-600"
                   disabled={!isFormValid}
                 >
-                  <Save className="mr-2" size={16} />
-                  Save Changes
+                  <Save className="mr-2" size={16} /> Save Changes
                 </Button>
                 <Button
                   onClick={handleDiscardChanges}
                   className="bg-red-500 hover:bg-red-600"
                 >
-                  <Trash2 className="mr-2" size={16} />
-                  Discard Changes
+                  <Trash2 className="mr-2" size={16} /> Discard Changes
                 </Button>
               </>
             ) : (
@@ -274,8 +242,7 @@ export function Dashboard() {
                 onClick={() => setEditMode(true)}
                 className="bg-blue-500 hover:bg-blue-600"
               >
-                <Edit2 className="mr-2" size={16} />
-                Edit Event
+                <Edit2 className="mr-2" size={16} /> Edit Event
               </Button>
             )}
           </div>
@@ -283,13 +250,21 @@ export function Dashboard() {
         <main className="p-6">
           {ActiveSectionComponent && (
             <ActiveSectionComponent
-              ref={getActiveRef(activeSection)}
+              ref={sectionRefs[activeSection]}
               event={selectedEvent}
               editMode={editMode}
               handleInputChange={handleInputChange}
               setIsValid={setIsFormValid}
-              {...(activeSection === "schedule" || activeSection === "speakers"
-                ? { setEvents, selectedEventId, handleDateChange }
+              setEvent={setSelectedEvent}
+              {...(activeSection === "schedule" ||
+              activeSection === "speakers" ||
+              activeSection === "pararel"
+                ? {
+                    setEvents,
+                    ...(activeSection === "schedule"
+                      ? { handleDateChange }
+                      : {}),
+                  }
                 : {})}
             />
           )}
@@ -302,8 +277,7 @@ export function Dashboard() {
           <AlertDialogHeader>
             <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them before
-              switching sections?
+              Do you want to save changes before switching sections?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

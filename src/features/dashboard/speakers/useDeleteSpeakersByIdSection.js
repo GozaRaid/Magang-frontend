@@ -1,11 +1,11 @@
 import { axiosInstance } from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-export const useDeleteSpeakersSection = () => {
+export const useDeleteSpeakersByIdSection = () => {
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ id }) => {
       try {
-        const response = await axiosInstance.delete("/speakers", {
+        const response = await axiosInstance.delete(`/speakers/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },

@@ -14,16 +14,30 @@ import { heroSectionSchema } from "@/lib/validationSchema";
 import { useDeleteHeroSection } from "@/features/dashboard/hero/useDeleteHeroSection";
 import { useAddHeroSection } from "@/features/dashboard/hero/useAddHeroSection";
 import { useToast } from "@/hooks/use-toast";
+import { useFetchHeroSection } from "@/features/dashboard/hero/useFetchHeroSection";
 
 export const HeroSection = forwardRef(function HeroSection(
-  { event, editMode, handleInputChange, setIsValid },
+  { event, editMode, setIsValid, setEvent },
   ref
 ) {
-  const toast = useToast();
+  const { toast } = useToast();
   const fileInputRef = useRef(null);
   const [errors, setErrors] = useState({});
   const deleteHeroSection = useDeleteHeroSection();
   const addHeroSection = useAddHeroSection();
+  const { data, isLoading, error } = useFetchHeroSection();
+
+  useEffect(() => {
+    if (data) {
+      setEvent((prev) => ({
+        ...prev,
+        title: data[0].title,
+        city: data[0].city,
+        image_url: data[0].image_url,
+        id: data[0].id,
+      }));
+    }
+  }, [data]);
 
   const triggerHeroImageUpload = () => {
     fileInputRef.current?.click();
@@ -46,8 +60,26 @@ export const HeroSection = forwardRef(function HeroSection(
     }
   };
 
+  const handleInputChange = (e, field) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      if (file) {
+        // Store the original file instead of converting to base64
+        setEvent((prevEvents) => ({
+          ...prevEvents,
+          image_url: file, // Store the file directly
+        }));
+      }
+    } else {
+      setEvent((prev) => ({
+        ...prev,
+        [field]: e.target.value,
+      }));
+    }
+  };
+
   const handleChange = async (e, field) => {
-    if (field === "image") {
+    if (field === "image_url") {
       const file = e.target.files[0];
       if (file) {
         handleInputChange({ target: { name: field, value: file } }, field);
@@ -74,28 +106,25 @@ export const HeroSection = forwardRef(function HeroSection(
   // Submit handler for the edit mutation
   const handleSubmit = async () => {
     try {
-      // Delete existing hero section first
-      await deleteHeroSection.mutateAsync();
-
-      // Then create new hero section with updated data
-      const formData = new FormData();
-
-      if (event.image instanceof File) {
-        formData.append("image", event.image);
+      // Delete existing hero section first if the image field is a file
+      if (event.image_url instanceof File) {
+        await deleteHeroSection.mutateAsync();
       }
 
       await addHeroSection.mutateAsync({
         title: event.title,
         city: event.city,
-        image: event.image,
+
+        image: event.image_url instanceof File ? event.image_url : undefined,
+        id: event.id,
       });
 
-      toast.toast({
+      toast({
         title: "Success",
         description: "Hero section updated successfully",
       });
     } catch (error) {
-      toast.toast({
+      toast({
         title: "Error",
         description: error.message || "Failed to update hero section",
         variant: "destructive",
@@ -148,9 +177,9 @@ export const HeroSection = forwardRef(function HeroSection(
                 <div className="relative w-full h-[200px] bg-gray-100 rounded-lg overflow-hidden">
                   <img
                     src={
-                      event.image instanceof File
-                        ? URL.createObjectURL(event.image)
-                        : event.image
+                      event.image_url instanceof File
+                        ? URL.createObjectURL(event.image_url)
+                        : event.image_url
                     }
                     alt="Event hero"
                     className="object-cover w-full h-full"
@@ -186,14 +215,12 @@ export const HeroSection = forwardRef(function HeroSection(
         ) : (
           <>
             <h1 className="text-4xl font-bold">{event.title}</h1>
-            <p className="mt-2 text-xl">
-              {event.city}, {event.date}
-            </p>
+            <p className="mt-2 text-xl">Location: {event.city}</p>
             <img
               src={
-                event.image instanceof File
-                  ? URL.createObjectURL(event.image)
-                  : event.image
+                event.image_url instanceof File
+                  ? URL.createObjectURL(event.image_url)
+                  : event.image_url
               }
               alt="Event hero"
               className="object-cover w-full h-full mt-4 rounded-lg"

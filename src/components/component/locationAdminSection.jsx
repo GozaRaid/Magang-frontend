@@ -7,15 +7,27 @@ import { locationSectionSchema } from "@/lib/validationSchema";
 import { useToast } from "@/hooks/use-toast";
 import { useAddLocationSection } from "@/features/dashboard/location/useAddLocationSection";
 import { useDeleteLocationSection } from "@/features/dashboard/location/useDeleteLocationSection";
+import { useFetchLocationSection } from "@/features/dashboard/location/useFetchLocationSection";
 
 export const LocationSection = forwardRef(function LocationSection(
-  { event, editMode, handleInputChange, setIsValid },
+  { event, editMode, setIsValid, setEvent },
   ref
 ) {
   const [error, setError] = useState("");
   const toast = useToast();
   const addLocationSection = useAddLocationSection();
   const deleteLocationSection = useDeleteLocationSection();
+  const { data, isLoading, error: fetchError } = useFetchLocationSection();
+
+  useEffect(() => {
+    if (data) {
+      setEvent((prev) => ({
+        ...prev,
+        map_url: data[0].map_url,
+        id: data[0].id,
+      }));
+    }
+  }, [data]);
 
   const validateLocation = (url) => {
     try {
@@ -26,6 +38,13 @@ export const LocationSection = forwardRef(function LocationSection(
       setError(error.errors[0].message);
       return false;
     }
+  };
+
+  const handleInputChange = (e, field) => {
+    setEvent((prev) => ({
+      ...prev,
+      [field]: e.target.value,
+    }));
   };
 
   const handleMapUrlChange = (e) => {

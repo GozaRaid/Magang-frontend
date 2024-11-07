@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { Menu, ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter, usePathname } from "next/navigation";
 
 const navItems = [
   { name: "Home", href: "/#hero" },
@@ -19,10 +19,10 @@ const navItems = [
   {
     name: "Speakers",
     href: "#speakers",
-    dropdown: [
-      { name: "Keynote Speakers", href: "/#keynote" },
-      { name: "Tutorial Sessions", href: "/#tutorial" },
-    ],
+    // dropdown: [
+    //   { name: "Keynote Speakers", href: "/#keynote" },
+    //   { name: "Tutorial Sessions", href: "/#tutorial" },
+    // ],
   },
   { name: "Schedule", href: "/schedule" },
   { name: "Location", href: "/#location" },
@@ -30,9 +30,11 @@ const navItems = [
 
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -45,40 +47,53 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleClick = (href) => {
+  const scrollToElement = (targetSection) => {
+    setTimeout(() => {
+      const element = document.getElementById(targetSection);
+      if (element) {
+        const navbarHeight =
+          document.querySelector("header")?.offsetHeight || 0;
+        const elementPosition =
+          element.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: elementPosition - navbarHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 100); // Small delay to ensure DOM is ready
+  };
+
+  const handleClick = async (href) => {
+    if (isNavigating) return; // Prevent multiple clicks while navigating
+
     if (href.startsWith("/#")) {
       const targetSection = href.substring(2);
 
-      const scrollToElement = () => {
-        const element = document.getElementById(targetSection);
-        if (element) {
-          const navbarHeight = document.querySelector("header").offsetHeight;
-          const elementPosition =
-            element.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({
-            top: elementPosition - navbarHeight,
-            behavior: "smooth",
-          });
-        }
-      };
-
-      // If already on the root ("/"), just scroll to the section
-      if (router.pathname === "/") {
-        scrollToElement();
+      if (pathname === "/") {
+        scrollToElement(targetSection);
       } else {
-        // If on a different path, navigate to root and then scroll
-        const onRouteChangeComplete = () => {
-          scrollToElement();
-          router.events.off("routeChangeComplete", onRouteChangeComplete); // Clean up event listener
-        };
-        router.push("/").then(() => {
-          router.events.on("routeChangeComplete", onRouteChangeComplete);
-        });
+        setIsNavigating(true);
+        try {
+          await router.push("/");
+          scrollToElement(targetSection);
+        } catch (error) {
+          console.error("Navigation error:", error);
+        } finally {
+          setIsNavigating(false);
+        }
       }
     } else {
-      setIsOpen(false);
-      router.push(href);
+      setIsNavigating(true);
+      try {
+        await router.push(href);
+      } catch (error) {
+        console.error("Navigation error:", error);
+      } finally {
+        setIsNavigating(false);
+      }
     }
+
+    setIsOpen(false);
   };
 
   const NavLink = ({ item }) => (
@@ -88,6 +103,7 @@ export function Navbar() {
           <button
             className="flex items-center font-medium transition-colors text-md"
             onClick={() => setDropdownOpen(!dropdownOpen)}
+            disabled={isNavigating}
           >
             {item.name}
             <ChevronDown className="w-4 h-4 ml-1" />
@@ -101,7 +117,7 @@ export function Navbar() {
                   <Link
                     key={subItem.name}
                     href={subItem.href}
-                    className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap" // Added 'whitespace-nowrap'
+                    className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
                     onClick={(e) => {
                       e.preventDefault();
                       handleClick(subItem.href);
@@ -134,7 +150,13 @@ export function Navbar() {
   return (
     <header className="sticky top-0 border-1 z-40 w-full bg-[linear-gradient(90deg,rgba(67,73,131,1)_10%,rgba(62,97,146,1)_30%,rgba(53,135,168,1)_52%,rgba(51,166,177,1)_75%,rgba(51,166,177,1)_89%)]">
       <div className="container flex items-center justify-between h-20 mx-auto">
-        <Link href="/#hero">
+        <Link
+          href="/#hero"
+          onClick={(e) => {
+            e.preventDefault();
+            handleClick("/#hero");
+          }}
+        >
           <Image
             src="/logo-icodsa.png"
             alt="ICoDSA Logo"
@@ -148,7 +170,6 @@ export function Navbar() {
           ))}
         </nav>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          {/* NOTE: Title & Desc required for the upper Sheet component */}
           <SheetTitle className="hidden" />
           <SheetDescription className="hidden" />
           <SheetTrigger asChild className="md:hidden">

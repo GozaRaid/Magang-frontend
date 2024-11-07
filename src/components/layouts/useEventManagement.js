@@ -6,9 +6,12 @@ export function useEventManagement() {
   const [selectedEventId, setSelectedEventId] = useState(events[0].id);
   const [editMode, setEditMode] = useState(false);
   const [originalEvent, setOriginalEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(
+    events.find((event) => event.id === selectedEventId) || events[0]
+  );
 
-  const selectedEvent =
-    events.find((event) => event.id === selectedEventId) || events[0];
+  // const selectedEvent =
+  // events.find((event) => event.id === selectedEventId) || events[0];
 
   useEffect(() => {
     setOriginalEvent(JSON.parse(JSON.stringify(selectedEvent)));
@@ -104,6 +107,7 @@ export function useEventManagement() {
     selectedEvent,
     selectedEventId,
     editMode,
+    setSelectedEvent,
     handleEventChange,
     handleInputChange,
     handleDateChange,

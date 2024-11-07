@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -12,148 +12,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const schedule = [
-  {
-    date: "2024-06-15",
-    items: [
-      {
-        timestart: "09:00 AM",
-        timeend: "10:00 AM",
-        title: "Registration",
-        speakers: "Event Staff",
-      },
-      {
-        timestart: "10:00 AM",
-        timeend: "11:00 AM",
-        title: "Keynote",
-        speakers: "John Smith",
-      },
-      {
-        timestart: "11:00 AM",
-        timeend: "12:00 PM",
-        title: "Panel Discussion",
-        speakers: "Alice Johnson, Michael Lee, Sarah Wilson",
-      },
-      {
-        timestart: "12:00 PM",
-        timeend: "01:00 PM",
-        title: "Lunch Break",
-        speakers: "N/A",
-      },
-      {
-        timestart: "01:00 PM",
-        timeend: "02:30 PM",
-        title: "Breakout Sessions",
-        speakers: "David Miller, Rachel Adams",
-      },
-      {
-        timestart: "02:30 PM",
-        timeend: "03:30 PM",
-        title: "Product Showcase",
-        speakers: "Emily Turner, James Green",
-      },
-      {
-        timestart: "03:30 PM",
-        timeend: "04:30 PM",
-        title: "Networking",
-        speakers: "N/A",
-      },
-    ],
-  },
-  {
-    date: "2024-06-16",
-    items: [
-      {
-        timestart: "09:30 AM",
-        timeend: "02:00 PM",
-        title: "Workshop",
-        speakers: "Lisa Thompson",
-      },
-      {
-        timestart: "02:00 PM",
-        timeend: "03:00 PM",
-        title: "Panel Discussion",
-        speakers: "Robert Davis, Karen Foster",
-      },
-      {
-        timestart: "03:00 PM",
-        timeend: "04:00 PM",
-        title: "Tech Expo",
-        speakers: "Tom Harris",
-      },
-      {
-        timestart: "04:00 PM",
-        timeend: "05:00 PM",
-        title: "Roundtable Discussion",
-        speakers: "Anna Clark, Peter Hall",
-      },
-    ],
-  },
-  {
-    date: "2024-06-17",
-    items: [
-      {
-        timestart: "09:30 AM",
-        timeend: "02:00 PM",
-        title: "Hackathon",
-        speakers: "Steve Rogers",
-      },
-      {
-        timestart: "02:00 PM",
-        timeend: "03:00 PM",
-        title: "Closing Ceremony",
-        speakers: "Monica Reyes",
-      },
-      {
-        timestart: "03:00 PM",
-        timeend: "04:00 PM",
-        title: "Networking Event",
-        speakers: "N/A",
-      },
-    ],
-  },
-  {
-    date: "2024-06-18",
-    items: [
-      {
-        timestart: "09:00 AM",
-        timeend: "10:30 AM",
-        title: "Networking Breakfast",
-        speakers: "N/A",
-      },
-      {
-        timestart: "10:30 AM",
-        timeend: "12:00 PM",
-        title: "Fireside Chat",
-        speakers: "Jessica Brown, Mark Johnson",
-      },
-      {
-        timestart: "12:00 PM",
-        timeend: "01:00 PM",
-        title: "Lunch Break",
-        speakers: "N/A",
-      },
-      {
-        timestart: "01:00 PM",
-        timeend: "03:00 PM",
-        title: "Final Workshop",
-        speakers: "Catherine White",
-      },
-      {
-        timestart: "03:00 PM",
-        timeend: "04:00 PM",
-        title: "Closing Remarks",
-        speakers: "Daniel Martinez",
-      },
-    ],
-  },
-];
-
-export function EventSchedule() {
+export function EventSchedule({ scheduleData }) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(schedule[0].date);
+  const [selectedDate, setSelectedDate] = useState("");
+
+  // Initialize schedule data
+  const schedule = scheduleData?.schedule || [];
   const itemsPerPage = 3;
   const totalPages = Math.ceil(schedule.length / itemsPerPage);
+
+  // Set initial selected date when data loads
+  useEffect(() => {
+    if (schedule.length > 0 && !selectedDate) {
+      setSelectedDate(schedule[0].date);
+    }
+  }, [schedule, selectedDate]);
 
   const handlePrevious = () => {
     const newPage = Math.max(0, currentPage - 1);
@@ -207,6 +80,7 @@ export function EventSchedule() {
                 {new Date(day.date).toLocaleDateString("en-US", {
                   weekday: "short",
                   month: "short",
+                  year: "numeric",
                   day: "numeric",
                 })}
               </TabsTrigger>
@@ -230,8 +104,13 @@ export function EventSchedule() {
               <TableHeader>
                 <TableRow className="bg-blue-950">
                   <TableHead className="w-1/6 text-white">Time</TableHead>
-                  <TableHead className="w-1/4 text-white">Event</TableHead>
-                  <TableHead className="w-1/2 text-white">Speakers</TableHead>
+                  <TableHead className="w-1/2 text-center text-white">
+                    Events
+                  </TableHead>
+                  <TableHead className="w-1/4 text-white">Speakers</TableHead>
+                  <TableHead className="w-1/6 text-white">
+                    Parallel Session
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -243,8 +122,9 @@ export function EventSchedule() {
                     <TableCell className="font-medium">
                       {item.timestart} - {item.timeend}
                     </TableCell>
-                    <TableCell>{item.title}</TableCell>
+                    <TableCell className="text-center">{item.title}</TableCell>
                     <TableCell>{item.speakers}</TableCell>
+                    <TableCell>{item.parallelSession}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

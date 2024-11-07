@@ -1,34 +1,60 @@
-"use client";
-
+import React from "react";
 import { MapPin, Calendar, Mic2 } from "lucide-react";
 
-export function About() {
-  const conferences = [
-    {
-      title: "1st ICoDIS | IoP Science",
-      href: "https://iopscience.iop.org/article/...",
-    },
-    {
-      title: "2nd ICoDIS | IoP Science",
-      href: "https://iopscience.iop.org/article/...",
-    },
-    {
-      title: "3rd ICoDIS (ICoDSA) | IEEE Xplore",
-      href: "https://ieeexplore.ieee.org/document/...",
-    },
-    {
-      title: "4th ICoDIS (ICoDSA) | IEEE Xplore",
-      href: "https://ieeexplore.ieee.org/document/...",
-    },
-    {
-      title: "5th ICoDIS (ICoDSA) | IEEE Xplore",
-      href: "https://ieeexplore.ieee.org/document/...",
-    },
-    {
-      title: "6th ICoDIS (ICoDSA) | IEEE Xplore",
-      href: "https://ieeexplore.ieee.org/document/...",
-    },
-  ];
+export function About({ aboutData, scheduleDateCount }) {
+  const formatDateRange = (dates) => {
+    // Check if dates is null, undefined, or not an array
+    if (!dates || !Array.isArray(dates) || dates.length === 0) return null;
+
+    const getDayName = (date) => {
+      return new Date(date).toLocaleDateString("en-US", { weekday: "long" });
+    };
+
+    // For single day
+    if (dates.length === 1) {
+      const date = new Date(dates[0].eventday);
+      return (
+        <>
+          <p>{getDayName(date)}</p>
+          <p>
+            {date.toLocaleDateString("en-US", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+        </>
+      );
+    }
+
+    // For multiple days
+    const sortedDates = Array.from(dates).sort(
+      (a, b) => new Date(a.eventday) - new Date(b.eventday)
+    );
+
+    const firstDate = new Date(sortedDates[0].eventday);
+    const lastDate = new Date(sortedDates[sortedDates.length - 1].eventday);
+
+    const formatMonthYear = firstDate.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+
+    return (
+      <>
+        <p>{`${getDayName(firstDate)} - ${getDayName(lastDate)}`}</p>
+        <p>{`${firstDate.getDate()} - ${lastDate.getDate()} ${formatMonthYear}`}</p>
+      </>
+    );
+  };
+
+  const conferences = aboutData?.conferences || [];
+
+  const splitTextIntoParagraphs = (text) => {
+    return text.split("\n\n").filter((paragraph) => paragraph.trim() !== "");
+  };
+
+  const aboutParagraphs = splitTextIntoParagraphs(aboutData?.aboutDescription);
 
   return (
     <div
@@ -38,26 +64,11 @@ export function About() {
       <h1 className="mb-8 text-4xl font-bold">About</h1>
       <div className="flex flex-col gap-8 leading-relaxed tracking-wider md:flex-row">
         <div className="md:w-2/3">
-          <p className="mb-8">
-            The rapid evolution of contemporary computing technology has
-            propelled individuals to generate an unprecedented volume of data,
-            characterized by both its size and diversity—a phenomenon
-            unparalleled in the annals of computing history. This surge in data
-            has sparked a compelling need for effective processing and analysis,
-            captivating the attention of researchers who endeavor to propose
-            innovative solutions. In response to this burgeoning interest, the
-            7th International Conference on Data Science and Its Applications
-            (ICoDSA) 2024, themed "Data for Good: Leveraging Data Science for
-            Social Impact," has been meticulously organized.
-          </p>
-          <p className="mb-8">
-            The conference serves as a focal point for researchers to share and
-            disseminate their noteworthy contributions in the realms of data
-            science, computational linguistics, and information science.
-            Encompassing a broad spectrum of relevant topics, 7th ICoDSA 2024
-            extends a warm invitation to researchers to explore and present
-            their latest insights in these dynamic fields.
-          </p>
+          {aboutParagraphs.map((paragraph, index) => (
+            <p key={index} className="mb-8">
+              {paragraph}
+            </p>
+          ))}
           <p className="mb-2 font-bold">
             Papers from the previous ICoDSA indexed in Scopus:
           </p>
@@ -65,7 +76,7 @@ export function About() {
             {conferences.map((conference, index) => (
               <li key={index}>
                 <a
-                  href={conference.href}
+                  href={conference.conference_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline"
@@ -82,28 +93,25 @@ export function About() {
               <MapPin className="flex-shrink-0 w-8 h-8 mr-4 text-cyan-800" />
               <div>
                 <h2 className="text-xl font-bold">Where</h2>
-                <p>Telkom University</p>
+                <p>{aboutData?.where}</p>
               </div>
             </div>
             <div className="flex items-start">
               <Calendar className="flex-shrink-0 w-8 h-8 mr-4 text-cyan-800" />
               <div>
                 <h2 className="text-xl font-bold">When</h2>
-                <p>Wednesday - Friday</p>
-                <p>13 - 15 December 2023</p>
+                {formatDateRange(scheduleDateCount)}
               </div>
             </div>
             <div className="flex items-start">
               <Mic2 className="flex-shrink-0 w-8 h-8 mr-4 text-cyan-800" />
               <div>
                 <h2 className="text-xl font-bold">Who</h2>
-                <p>
-                  Assoc. Prof. Dr. Hoshang Kolivand <br />
-                  Assoc Prof. Dr. Satria Mandala <br />
-                  Prof. Hui-Min David Wang <br />
-                  Prof. Dimitrios Georgakopoulos <br />
-                  Dr. Ahsan Morsed (Tutorial)
-                </p>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: aboutData?.who.replace(/\n/g, "<br />"),
+                  }}
+                ></p>
               </div>
             </div>
           </div>

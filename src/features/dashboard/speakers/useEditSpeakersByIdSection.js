@@ -1,17 +1,15 @@
 import { axiosInstance } from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-export const useAddAboutSection = () => {
+export const useEditSpeakersByIdSection = () => {
   return useMutation({
-    mutationFn: async ({ aboutDescription, conferences, where, who }) => {
+    mutationFn: async ({ id, speaker }) => {
       try {
-        const response = await axiosInstance.post(
-          "/about",
+        const response = await axiosInstance.put(
+          `/speakers/${id}`,
           {
-            aboutDescription,
-            conferences,
-            where,
-            who,
+            name: speaker.name,
+            bio: speaker.bio,
           },
           {
             headers: {
