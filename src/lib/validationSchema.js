@@ -34,7 +34,7 @@ export const scheduleItemSchema = z.object({
   timeend: z.string().regex(timeRegex, "Invalid time format (use HH:MM AM/PM)"),
   title: z.string().min(1, "Title is required"),
   speakers: z.string().min(1, "Speakers are required"),
-  parallelSession: z.string().min(1, "Session is required"),
+  parallelsession: z.string().min(1, "Session is required"),
 });
 
 export const scheduleSectionSchema = z.object({

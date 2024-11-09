@@ -94,7 +94,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
           timeend: "10:00 AM",
           title: "New Event",
           speakers: "TBA",
-          parallelSession: "",
+          parallelsession: "",
         },
       ],
     };
@@ -121,7 +121,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
       timeend: "",
       title: "",
       speakers: "",
-      parallelSession: "",
+      parallelsession: "",
     };
 
     const updatedSchedule = event.schedule.map((day, index) =>
@@ -359,12 +359,12 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                             placeholder="Event Title"
                           />
                           <Input
-                            value={item.parallelSession}
+                            value={item.parallelsession}
                             onChange={(e) =>
                               handleScheduleChange(
                                 dayIndex,
                                 itemIndex,
-                                "parallelSession",
+                                "parallelsession",
                                 e.target.value
                               )
                             }
@@ -414,9 +414,9 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                         <span className="font-semibold">
                           {item.timestart} - {item.timeend}
                         </span>
-                        {item.parallelSession && (
+                        {item.parallelsession && (
                           <span className="px-2 py-1 ml-4 text-sm bg-gray-100 rounded-md">
-                            Session: {item.parallelSession}
+                            Session: {item.parallelsession}
                           </span>
                         )}
                       </div>

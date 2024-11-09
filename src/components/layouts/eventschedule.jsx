@@ -124,7 +124,7 @@ export function EventSchedule({ scheduleData }) {
                     </TableCell>
                     <TableCell className="text-center">{item.title}</TableCell>
                     <TableCell>{item.speakers}</TableCell>
-                    <TableCell>{item.parallelSession}</TableCell>
+                    <TableCell>{item.parallelsession}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
