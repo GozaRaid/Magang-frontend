@@ -236,7 +236,7 @@ export function Dashboard() {
                     <Save className="mr-2" size={16} /> Save Changes
                   </Button>
                   <Button
-                    onClick={handleDiscardChanges}
+                    onClick={() => handleDiscardChanges(activeSection)}
                     className="bg-red-500 hover:bg-red-600"
                   >
                     <Trash2 className="mr-2" size={16} /> Discard Changes

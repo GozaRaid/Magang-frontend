@@ -93,12 +93,17 @@ export function useEventManagement() {
     setEditMode(false);
   };
 
-  const handleDiscardChanges = () => {
+  const handleDiscardChanges = (sections) => {
+    console.log("Discarding changes:", sections);
+
+    // reload page and into the section
+
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
         event.id === selectedEventId ? { ...originalEvent } : event
       )
     );
+    window.location.reload();
     setEditMode(false);
   };
 

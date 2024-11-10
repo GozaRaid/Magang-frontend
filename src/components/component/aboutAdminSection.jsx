@@ -55,33 +55,33 @@ export const AboutSection = forwardRef(function AboutSection(
     }
   };
 
-  const validateConferenceField = (index, field, value) => {
-    try {
-      aboutSectionSchema.shape[field].parse(value);
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        if (newErrors.conferences) {
-          newErrors.conferences[index] = {
-            ...newErrors.conferences[index],
-            [field]: null,
-          };
-        }
-        return newErrors;
-      });
-      return true;
-    } catch (error) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        if (!newErrors.conferences) newErrors.conferences = [];
-        newErrors.conferences[index] = {
-          ...(newErrors.conferences[index] || {}),
-          [field]: error.errors[0].message,
-        };
-        return newErrors;
-      });
-      return false;
-    }
-  };
+  // const validateConferenceField = (index, field, value) => {
+  //   try {
+  //     aboutSectionSchema.shape[field].parse(value);
+  //     setErrors((prev) => {
+  //       const newErrors = { ...prev };
+  //       if (newErrors.conferences) {
+  //         newErrors.conferences[index] = {
+  //           ...newErrors.conferences[index],
+  //           [field]: null,
+  //         };
+  //       }
+  //       return newErrors;
+  //     });
+  //     return true;
+  //   } catch (error) {
+  //     setErrors((prev) => {
+  //       const newErrors = { ...prev };
+  //       if (!newErrors.conferences) newErrors.conferences = [];
+  //       newErrors.conferences[index] = {
+  //         ...(newErrors.conferences[index] || {}),
+  //         [field]: error.errors[0].message,
+  //       };
+  //       return newErrors;
+  //     });
+  //     return false;
+  //   }
+  // };
 
   const handleInputChange = (e, field) => {
     setEvent((prev) => ({
@@ -114,7 +114,7 @@ export const AboutSection = forwardRef(function AboutSection(
     );
 
     // Validate the conference field
-    validateConferenceField(index, field, value);
+    // validateConferenceField(index, field, value);
   };
 
   const addConference = () => {
