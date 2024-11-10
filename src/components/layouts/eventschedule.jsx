@@ -78,7 +78,6 @@ export function EventSchedule({ scheduleData }) {
                 className="data-[state=active]:bg-[linear-gradient(90deg,rgba(67,73,131,1)_10%,rgba(62,97,146,1)_30%,rgba(53,135,168,1)_52%,rgba(51,166,177,1)_75%,rgba(51,166,177,1)_89%)] data-[state=active]:text-primary-foreground "
               >
                 {new Date(day.date).toLocaleDateString("en-US", {
-                  weekday: "short",
                   month: "short",
                   year: "numeric",
                   day: "numeric",

@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 export const useAddPararelSession = () => {
   return useMutation({
     mutationFn: async ({ parallelSessions }) => {
+      console.log(parallelSessions);
       try {
         const response = await axiosInstance.post(
           "/pararel-sessions",
@@ -22,6 +23,9 @@ export const useAddPararelSession = () => {
           error.response?.data?.message || error.message || "An error occurred"
         );
       }
+    },
+    onSuccess: (data) => {
+      console.log(data);
     },
   });
 };

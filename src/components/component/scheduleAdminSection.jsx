@@ -11,6 +11,12 @@ import { useAddScheduleSection } from "@/features/dashboard/schedule/useAddSched
 import { useDeleteScheduleSection } from "@/features/dashboard/schedule/useDeteleScheduleSection";
 import { useToast } from "@/hooks/use-toast";
 import { useFetchScheduleSection } from "@/features/dashboard/schedule/useFetchScheduleSection";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export const ScheduleSection = forwardRef(function ScheduleSection(
   { event, editMode, setEvent, setEvents, selectedEventId, setIsValid },
@@ -266,168 +272,173 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
 
   return (
     <section className="mb-12">
-      <Card>
-        <CardHeader className="p-4">
+      <Card className="w-full mx-auto">
+        <CardHeader>
           <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
-          {event.schedule.map((day, dayIndex) => (
-            <div key={dayIndex} className="mb-16">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold">
-                  Day {dayIndex + 1} ({day.date})
-                </h3>
-                {editMode && (
-                  <div>
-                    <Button
-                      onClick={() => addScheduleItem(dayIndex)}
-                      size="sm"
-                      className="mr-2"
-                    >
-                      <Plus size={16} />
-                    </Button>
-                    <Button
-                      onClick={() => removeDay(dayIndex)}
-                      size="sm"
-                      variant="destructive"
-                    >
-                      <Minus size={16} />
-                    </Button>
+          <Accordion type="single" collapsible className="w-full">
+            {event.schedule.map((day, dayIndex) => (
+              <AccordionItem key={dayIndex} value={`day-${dayIndex}`}>
+                <AccordionTrigger>
+                  <div className="flex justify-between w-full pr-4">
+                    <span>Day {dayIndex + 1}</span>
+                    <span>{day.date}</span>
                   </div>
-                )}
-              </div>
-              {editMode && (
-                <Input
-                  type="date"
-                  value={day.date}
-                  onChange={(e) =>
-                    handleDayDateChange(dayIndex, e.target.value)
-                  }
-                  className="mb-4"
-                />
-              )}
-              {errors[`day-${dayIndex}`] && (
-                <div className="mb-2 text-red-500">
-                  {errors[`day-${dayIndex}`].date}
-                </div>
-              )}
-              {day.items.map((item, itemIndex) => (
-                <div key={itemIndex} className="mb-4">
-                  {editMode ? (
-                    <>
-                      <div className="p-4 mb-6 border rounded">
-                        <div className="flex items-center mb-2">
-                          <Input
-                            type="text"
-                            value={item.timestart}
-                            onChange={(e) =>
-                              handleScheduleChange(
-                                dayIndex,
-                                itemIndex,
-                                "timestart",
-                                e.target.value
-                              )
-                            }
-                            className="w-1/6 mr-2"
-                            placeholder="Start Time"
-                          />
-                          <Input
-                            type="text"
-                            value={item.timeend}
-                            onChange={(e) =>
-                              handleScheduleChange(
-                                dayIndex,
-                                itemIndex,
-                                "timeend",
-                                e.target.value
-                              )
-                            }
-                            className="w-1/6 mr-2"
-                            placeholder="End Time"
-                          />
-                          <Input
-                            value={item.title}
-                            onChange={(e) =>
-                              handleScheduleChange(
-                                dayIndex,
-                                itemIndex,
-                                "title",
-                                e.target.value
-                              )
-                            }
-                            className="w-1/3 mr-2"
-                            placeholder="Event Title"
-                          />
-                          <Input
-                            value={item.parallelsession}
-                            onChange={(e) =>
-                              handleScheduleChange(
-                                dayIndex,
-                                itemIndex,
-                                "parallelsession",
-                                e.target.value
-                              )
-                            }
-                            className="w-1/6 mr-2"
-                            placeholder="Parallel Session"
-                          />
-                          <Button
-                            onClick={() =>
-                              removeScheduleItem(dayIndex, itemIndex)
-                            }
-                            size="sm"
-                            variant="destructive"
-                            className="ml-2"
-                          >
-                            <Minus size={16} />
-                          </Button>
-                        </div>
-                        <Input
-                          value={item.speakers}
-                          onChange={(e) =>
-                            handleScheduleChange(
-                              dayIndex,
-                              itemIndex,
-                              "speakers",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Performers/Speakers"
-                        />
-                        {errors[`day-${dayIndex}-item-${itemIndex}`] && (
-                          <div className="mt-2 text-red-500">
-                            {Object.values(
-                              errors[`day-${dayIndex}-item-${itemIndex}`]
-                            ).map((error, index) => (
-                              <div key={index} className="text-sm">
-                                {error}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4">
+                    {editMode && (
+                      <Input
+                        type="date"
+                        value={day.date}
+                        onChange={(e) =>
+                          handleDayDateChange(dayIndex, e.target.value)
+                        }
+                        className="mb-4"
+                      />
+                    )}
+                    {errors[`day-${dayIndex}`] && (
+                      <div className="mb-2 text-red-500">
+                        {errors[`day-${dayIndex}`].date}
+                      </div>
+                    )}
+                    {day.items.map((item, itemIndex) => (
+                      <div key={itemIndex} className="p-4 border rounded">
+                        {editMode ? (
+                          <>
+                            <div className="flex items-center mb-2">
+                              <Input
+                                type="text"
+                                value={item.timestart}
+                                onChange={(e) =>
+                                  handleScheduleChange(
+                                    dayIndex,
+                                    itemIndex,
+                                    "timestart",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-1/4 mr-2"
+                                placeholder="Start Time"
+                              />
+                              <Input
+                                type="text"
+                                value={item.timeend}
+                                onChange={(e) =>
+                                  handleScheduleChange(
+                                    dayIndex,
+                                    itemIndex,
+                                    "timeend",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-1/4 mr-2"
+                                placeholder="End Time"
+                              />
+                              <Input
+                                value={item.title}
+                                onChange={(e) =>
+                                  handleScheduleChange(
+                                    dayIndex,
+                                    itemIndex,
+                                    "title",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-1/2 mr-2"
+                                placeholder="Event Title"
+                              />
+                              <Input
+                                value={item.parallelsession}
+                                onChange={(e) =>
+                                  handleScheduleChange(
+                                    dayIndex,
+                                    itemIndex,
+                                    "parallelsession",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-1/4 mr-2"
+                                placeholder="Parallel Session"
+                              />
+                              <Button
+                                onClick={() =>
+                                  removeScheduleItem(dayIndex, itemIndex)
+                                }
+                                size="sm"
+                                variant="destructive"
+                              >
+                                <Minus size={16} />
+                              </Button>
+                            </div>
+                            <Input
+                              value={item.speakers}
+                              onChange={(e) =>
+                                handleScheduleChange(
+                                  dayIndex,
+                                  itemIndex,
+                                  "speakers",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Speakers"
+                            />
+                            {errors[`day-${dayIndex}-item-${itemIndex}`] && (
+                              <div className="mt-2 text-red-500">
+                                {Object.values(
+                                  errors[`day-${dayIndex}-item-${itemIndex}`]
+                                ).map((error, index) => (
+                                  <div key={index} className="text-sm">
+                                    {error}
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex items-center mb-2">
+                              <Clock className="mr-2" size={16} />
+                              <span className="font-semibold">
+                                {item.timestart} - {item.timeend}
+                              </span>
+                              {item.parallelsession && (
+                                <span className="px-2 py-1 ml-4 text-sm bg-gray-100 rounded-md">
+                                  Session: {item.parallelsession}
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="font-bold">{item.title}</h4>
+                            <p>{item.speakers}</p>
+                          </>
                         )}
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex items-center mb-2">
-                        <Clock className="mr-2" size={16} />
-                        <span className="font-semibold">
-                          {item.timestart} - {item.timeend}
-                        </span>
-                        {item.parallelsession && (
-                          <span className="px-2 py-1 ml-4 text-sm bg-gray-100 rounded-md">
-                            Session: {item.parallelsession}
-                          </span>
-                        )}
+                    ))}
+                    {editMode && (
+                      <div className="flex justify-between mt-4">
+                        <Button
+                          onClick={() => addScheduleItem(dayIndex)}
+                          size="sm"
+                        >
+                          <Plus size={16} className="mr-2" />
+                          Add Item
+                        </Button>
+                        <Button
+                          onClick={() => removeDay(dayIndex)}
+                          size="sm"
+                          variant="destructive"
+                        >
+                          <Minus size={16} className="mr-2" />
+                          Remove Day
+                        </Button>
                       </div>
-                      <h4 className="font-bold">{item.title}</h4>
-                      <p>{item.speakers}</p>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
           {editMode && (
             <Button onClick={addDay} className="mt-4">
               <Plus size={16} className="mr-2" />

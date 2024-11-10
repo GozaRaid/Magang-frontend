@@ -93,16 +93,6 @@ export function Login() {
           </Button>
         </form>
         <div className="pt-3 text-sm text-center text-grey-dark">
-          Create an account?{" "}
-          <Link
-            href="/admin/auth/register"
-            className="font-bold no-underline text-blue"
-            prefetch={false}
-          >
-            Register.
-          </Link>
-        </div>
-        <div className="pt-3 text-sm text-center text-grey-dark">
           Go to homepage?{" "}
           <Link
             href="/"

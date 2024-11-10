@@ -16,6 +16,7 @@ import {
   Edit2,
   LogOut,
   ExternalLink,
+  UserPen,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -36,6 +37,7 @@ import { ParalelSection } from "@/components/component/paralelAdminSection";
 import { useEventManagement } from "@/components/layouts/useEventManagement";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useRouter } from "next/navigation";
+import { Register } from "@/components/layouts/register";
 
 export function Dashboard() {
   const {
@@ -127,6 +129,7 @@ export function Dashboard() {
     pararel: ParalelSection,
     speakers: SpeakersSection,
     location: LocationSection,
+    register: Register,
   }[activeSection];
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -138,6 +141,7 @@ export function Dashboard() {
     { name: "Parallel Session", icon: CalendarDays, key: "pararel" },
     { name: "Speakers", icon: Mic, key: "speakers" },
     { name: "Location", icon: MapPin, key: "location" },
+    { name: "Register Account", icon: UserPen, key: "register" },
   ];
 
   return (
@@ -220,79 +224,89 @@ export function Dashboard() {
           <h2 className="text-2xl font-semibold capitalize">
             {activeSection} Section
           </h2>
-          <div className="flex items-center space-x-2">
-            {editMode ? (
-              <>
+          {activeSection !== "register" && (
+            <div className="flex items-center space-x-2">
+              {editMode ? (
+                <>
+                  <Button
+                    onClick={handleSave}
+                    className="bg-green-500 hover:bg-green-600"
+                    disabled={!isFormValid}
+                  >
+                    <Save className="mr-2" size={16} /> Save Changes
+                  </Button>
+                  <Button
+                    onClick={handleDiscardChanges}
+                    className="bg-red-500 hover:bg-red-600"
+                  >
+                    <Trash2 className="mr-2" size={16} /> Discard Changes
+                  </Button>
+                </>
+              ) : (
                 <Button
-                  onClick={handleSave}
-                  className="bg-green-500 hover:bg-green-600"
-                  disabled={!isFormValid}
+                  onClick={() => setEditMode(true)}
+                  className="bg-blue-500 hover:bg-blue-600"
                 >
-                  <Save className="mr-2" size={16} /> Save Changes
+                  <Edit2 className="mr-2" size={16} /> Edit Event
                 </Button>
-                <Button
-                  onClick={handleDiscardChanges}
-                  className="bg-red-500 hover:bg-red-600"
-                >
-                  <Trash2 className="mr-2" size={16} /> Discard Changes
-                </Button>
-              </>
-            ) : (
-              <Button
-                onClick={() => setEditMode(true)}
-                className="bg-blue-500 hover:bg-blue-600"
-              >
-                <Edit2 className="mr-2" size={16} /> Edit Event
-              </Button>
-            )}
-          </div>
-        </header>
-        <main className="p-6">
-          {ActiveSectionComponent && (
-            <ActiveSectionComponent
-              ref={sectionRefs[activeSection]}
-              event={selectedEvent}
-              editMode={editMode}
-              handleInputChange={handleInputChange}
-              setIsValid={setIsFormValid}
-              setEvent={setSelectedEvent}
-              {...(activeSection === "schedule" ||
-              activeSection === "speakers" ||
-              activeSection === "pararel"
-                ? {
-                    setEvents,
-                    ...(activeSection === "schedule"
-                      ? { handleDateChange }
-                      : {}),
-                  }
-                : {})}
-            />
+              )}
+            </div>
           )}
-        </main>
+        </header>
+        {activeSection !== "register" ? (
+          <main className="p-6">
+            {ActiveSectionComponent && (
+              <ActiveSectionComponent
+                ref={sectionRefs[activeSection]}
+                event={selectedEvent}
+                editMode={editMode}
+                handleInputChange={handleInputChange}
+                setIsValid={setIsFormValid}
+                setEvent={setSelectedEvent}
+                {...(activeSection === "schedule" ||
+                activeSection === "speakers" ||
+                activeSection === "pararel"
+                  ? {
+                      setEvents,
+                      ...(activeSection === "schedule"
+                        ? { handleDateChange }
+                        : {}),
+                    }
+                  : {})}
+              />
+            )}
+          </main>
+        ) : (
+          <main className="flex flex-col items-center justify-center p-12">
+            <ActiveSectionComponent />
+          </main>
+        )}
       </div>
 
       {/* Alert Dialog */}
-      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              Do you want to save changes before switching sections?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleDiscardAlert}>
-              Discard
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleKeepChanges}
-              disabled={!isFormValid}
-            >
-              Save
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {activeSection !== "register" && (
+        <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+              <AlertDialogDescription>
+                Do you want to save changes before switching sections?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={handleDiscardAlert}>
+                Discard
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleKeepChanges}
+                disabled={!isFormValid}
+              >
+                Save
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }

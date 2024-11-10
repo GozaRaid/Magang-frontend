@@ -1,17 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
-import { usePostAuth } from "@/features/auth/usePostAuth";
 import { axiosInstance } from "@/lib/axios";
 
 export const usePostUser = () => {
-  const postAuthMutation = usePostAuth();
-
   return useMutation({
-    mutationFn: async ({ username, password, keyword }) => {
+    mutationFn: async ({ username, password }) => {
       try {
         const response = await axiosInstance.post("/users", {
           username,
           password,
-          keyword,
         });
         return response.data;
       } catch (error) {
@@ -19,12 +15,6 @@ export const usePostUser = () => {
           error.response?.data?.message || error.message || "An error occurred"
         );
       }
-    },
-    onSuccess: (variables) => {
-      postAuthMutation.mutate({
-        username: variables.username,
-        password: variables.password,
-      });
     },
   });
 };

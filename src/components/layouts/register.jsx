@@ -1,6 +1,3 @@
-"use client";
-
-import Link from "next/link";
 import { z } from "zod";
 import { Formik, Form, Field } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
@@ -17,12 +14,12 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { set } from "date-fns";
 
 // Define the Zod validation schema
 const registerValidationSchema = z
   .object({
     username: z.string().min(1, { message: "Username is required" }),
-    keyword: z.string().min(1, { message: "Keyword is required" }),
     password: z.string().min(1, { message: "Password is required" }),
     reenterPassword: z
       .string()
@@ -38,6 +35,7 @@ export function Register() {
   const { login, isLoggedIn } = useAuth();
   const mutation = usePostUser();
   const [registerFailed, setRegisterFailed] = useState("");
+  const [registerSuccess, setRegisterSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -46,14 +44,19 @@ export function Register() {
     }
   }, [isLoggedIn, router]);
 
-  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+  const handleSubmit = async (values, { setSubmitting }) => {
     setIsLoading(true);
     try {
-      const { username, password, keyword } = values;
+      const { username, password } = values;
 
-      await mutation.mutateAsync({ username, password, keyword });
-      login(data.data.accessToken);
-      router.push("/admin/dashboard");
+      await mutation.mutateAsync(
+        { username, password },
+        {
+          onSuccess: (data) => {
+            setRegisterSuccess(data.message);
+          },
+        }
+      );
     } catch (error) {
       setRegisterFailed(error.message);
     } finally {
@@ -74,7 +77,6 @@ export function Register() {
         <Formik
           initialValues={{
             username: "",
-            keyword: "",
             password: "",
             reenterPassword: "",
           }}
@@ -125,20 +127,12 @@ export function Register() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="keyword">Keyword</Label>
-                <Field
-                  id="keyword"
-                  name="keyword"
-                  type="password"
-                  className="input-custom"
-                />
-                {errors.keyword && touched.keyword && (
-                  <div className="text-red-500">{errors.keyword}</div>
-                )}
-              </div>
               {registerFailed && (
                 <div className="text-sm text-red-500">{registerFailed}</div>
+              )}
+
+              {registerSuccess && (
+                <div className="text-sm text-green-500">{registerSuccess}</div>
               )}
 
               <Button
@@ -151,26 +145,6 @@ export function Register() {
             </Form>
           )}
         </Formik>
-        <div className="pt-3 text-sm text-center text-grey-dark">
-          Already have an account?{" "}
-          <Link
-            href="login"
-            className="font-bold no-underline text-blue"
-            prefetch={false}
-          >
-            Sign in.
-          </Link>
-        </div>
-        <div className="pt-3 text-sm text-center text-grey-dark">
-          Go to homepage?{" "}
-          <Link
-            href="/"
-            className="font-bold no-underline text-blue"
-            prefetch={false}
-          >
-            Homepage.
-          </Link>
-        </div>
       </CardContent>
     </Card>
   );

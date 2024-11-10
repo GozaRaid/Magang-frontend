@@ -17,5 +17,8 @@ export const useDeletePararelSession = () => {
         );
       }
     },
+    onSuccess: (data) => {
+      console.log(data);
+    },
   });
 };

@@ -125,12 +125,21 @@ export const ParalelSection = forwardRef(function ParalelSection(
     }
   };
 
+  const formatDateToLocalString = (date) => {
+    const adjustedDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    );
+    return adjustedDate.toISOString().split("T")[0];
+  };
+
   const addSession = (formEvent) => {
     formEvent.preventDefault();
     const formData = new FormData(formEvent.currentTarget);
     const newSession = {
       id: Math.random().toString(),
-      date: selectedDate || new Date(),
+      date: selectedDate
+        ? formatDateToLocalString(new Date(selectedDate))
+        : new Date(),
       name: formData.get("name"),
       papers: [], // Initialize with empty array
     };
@@ -197,7 +206,9 @@ export const ParalelSection = forwardRef(function ParalelSection(
     const updatedSession = {
       ...editingSession,
       name: formData.get("name"),
-      date: selectedDate || editingSession.date,
+      date: selectedDate
+        ? formatDateToLocalString(new Date(selectedDate))
+        : editingSession.date,
     };
 
     const updateSessions = event.parallelSessions.map((session) =>
@@ -211,17 +222,10 @@ export const ParalelSection = forwardRef(function ParalelSection(
 
     setEditingSession(null);
     setIsEditSessionOpen(false);
-    // setErrors({});
   };
 
   const handleSubmit = async () => {
     try {
-      // const updatedEvent = {
-      //   ...event,
-      //   parallelSessions: event.parallelSessions,
-      // };
-      // setEvent(updatedEvent);
-
       await deletePararelSession.mutateAsync();
 
       await addPararelSession.mutateAsync({
@@ -288,8 +292,6 @@ export const ParalelSection = forwardRef(function ParalelSection(
                     Add Session
                   </Button>
                 </DialogFooter>
-                {/* <FormError path="name" />
-                <FormError path="date" /> */}
               </form>
             </DialogContent>
           </Dialog>

@@ -17,8 +17,8 @@ export const useDeleteAboutSection = () => {
         );
       }
     },
-    onSuccess: () => {
-      console.log("About section deleted successfully");
+    onSuccess: (data) => {
+      console.log(data);
     },
   });
 };
