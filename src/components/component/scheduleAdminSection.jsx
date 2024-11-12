@@ -96,10 +96,10 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
       date: "",
       items: [
         {
-          timestart: "09:00 AM",
-          timeend: "10:00 AM",
-          title: "New Event",
-          speakers: "TBA",
+          timestart: "",
+          timeend: "",
+          title: "",
+          speakers: "",
           parallelsession: "",
         },
       ],
@@ -368,6 +368,9 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                                 }
                                 size="sm"
                                 variant="destructive"
+                                disabled={
+                                  event.schedule[dayIndex].items.length === 1
+                                }
                               >
                                 <Minus size={16} />
                               </Button>
@@ -405,7 +408,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                               </span>
                               {item.parallelsession && (
                                 <span className="px-2 py-1 ml-4 text-sm bg-gray-100 rounded-md">
-                                  Session: {item.parallelsession}
+                                  Parallel Session: {item.parallelsession}
                                 </span>
                               )}
                             </div>
@@ -428,6 +431,7 @@ export const ScheduleSection = forwardRef(function ScheduleSection(
                           onClick={() => removeDay(dayIndex)}
                           size="sm"
                           variant="destructive"
+                          disabled={event.schedule.length === 1}
                         >
                           <Minus size={16} className="mr-2" />
                           Remove Day
