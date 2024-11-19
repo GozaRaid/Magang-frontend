@@ -215,7 +215,7 @@ export const HeroSection = forwardRef(function HeroSection(
         ) : (
           <>
             <h1 className="text-4xl font-bold">{event.title}</h1>
-            <p className="mt-2 text-xl">Location: {event.city}</p>
+            <p className="mt-2 text-xl">City: {event.city}</p>
             <img
               src={
                 event.image_url instanceof File

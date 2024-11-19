@@ -70,7 +70,7 @@ export const speakersSectionSchema = z.object({
       ),
     z
       .string()
-      .url("Invalid image URL")
+      .url("Invalid image")
       .or(z.string().min(1, "Image is required")),
   ]),
 });
