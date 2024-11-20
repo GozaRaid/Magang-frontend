@@ -31,18 +31,18 @@ const registerValidationSchema = z
   });
 
 export function Register() {
-  const router = useRouter();
-  const { login, isLoggedIn } = useAuth();
+  // const router = useRouter();
+  // const { login, isLoggedIn } = useAuth();
   const mutation = usePostUser();
   const [registerFailed, setRegisterFailed] = useState("");
   const [registerSuccess, setRegisterSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (isLoggedIn && router.pathname !== "/") {
-      router.push("/admin/dashboard");
-    }
-  }, [isLoggedIn, router]);
+  // useEffect(() => {
+  //   if (isLoggedIn && router.pathname !== "/") {
+  //     router.push("/admin/dashboard");
+  //   }
+  // }, [isLoggedIn, router]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setIsLoading(true);
