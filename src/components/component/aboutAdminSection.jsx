@@ -4,7 +4,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { aboutSectionSchema } from "@/lib/validationSchema";
+import {
+  aboutSectionSchema,
+  aboutConferenceSection,
+} from "@/lib/validationSchema";
 import { useDeleteAboutSection } from "@/features/dashboard/about/useDeleteAboutSection";
 import { useAddAboutSection } from "@/features/dashboard/about/useAddAboutSection";
 import { useToast } from "@/hooks/use-toast";
@@ -43,7 +46,12 @@ export const AboutSection = forwardRef(function AboutSection(
   const validateField = (field, value) => {
     try {
       aboutSectionSchema.shape[field].parse(value);
-      setErrors((prev) => ({ ...prev, [field]: null }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        newErrors[field] = null;
+        return newErrors;
+      });
+
       return true;
     } catch (error) {
       setErrors((prev) => {
@@ -55,33 +63,27 @@ export const AboutSection = forwardRef(function AboutSection(
     }
   };
 
-  // const validateConferenceField = (index, field, value) => {
-  //   try {
-  //     aboutSectionSchema.shape[field].parse(value);
-  //     setErrors((prev) => {
-  //       const newErrors = { ...prev };
-  //       if (newErrors.conferences) {
-  //         newErrors.conferences[index] = {
-  //           ...newErrors.conferences[index],
-  //           [field]: null,
-  //         };
-  //       }
-  //       return newErrors;
-  //     });
-  //     return true;
-  //   } catch (error) {
-  //     setErrors((prev) => {
-  //       const newErrors = { ...prev };
-  //       if (!newErrors.conferences) newErrors.conferences = [];
-  //       newErrors.conferences[index] = {
-  //         ...(newErrors.conferences[index] || {}),
-  //         [field]: error.errors[0].message,
-  //       };
-  //       return newErrors;
-  //     });
-  //     return false;
-  //   }
-  // };
+  const validateConferenceField = (index, field, value) => {
+    try {
+      aboutConferenceSection.shape["conferences"][field].parse(value);
+      setErrors((prev) => {
+        const newErrors = { ...prev, conferences: { ...prev.conferences } };
+        newErrors.conferences[`${field}-${index}`] = null;
+        return newErrors;
+      });
+      return null;
+    } catch (error) {
+      setErrors((prev) => {
+        const newErrors = { ...prev, conferences: { ...prev.conferences } };
+        newErrors.conferences[`${field}-${index}`] = JSON.parse(
+          error.message
+        )[0].message;
+        return newErrors;
+      });
+
+      return false;
+    }
+  };
 
   const handleInputChange = (e, field) => {
     setEvent((prev) => ({
@@ -114,7 +116,7 @@ export const AboutSection = forwardRef(function AboutSection(
     );
 
     // Validate the conference field
-    // validateConferenceField(index, field, value);
+    validateConferenceField(index, field, value);
   };
 
   const addConference = () => {
@@ -218,53 +220,60 @@ export const AboutSection = forwardRef(function AboutSection(
               <div className="mb-4">
                 <Label>Conferences</Label>
                 {event.conferences.map((conference, index) => (
-                  <div key={index} className="flex items-center mb-2">
-                    <Input
-                      value={conference.title}
-                      onChange={(e) =>
-                        handleConferenceChange(index, "title", e.target.value)
-                      }
-                      className={`flex-1 mr-2 ${
-                        errors.conferences?.[index]?.title
-                          ? "border-red-500"
-                          : ""
-                      }`}
-                      placeholder="Conference Title"
-                    />
-                    {errors.conferences?.[index]?.title && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {errors.conferences[index].title}
-                      </p>
-                    )}
-                    <Input
-                      value={conference.conference_url}
-                      onChange={(e) =>
-                        handleConferenceChange(
-                          index,
-                          "conference_url",
-                          e.target.value
-                        )
-                      }
-                      className={`flex-1 mr-2 ${
-                        errors.conferences?.[index]?.conference_url
-                          ? "border-red-500"
-                          : ""
-                      }`}
-                      placeholder="Conference URL"
-                    />
-                    {errors.conferences?.[index]?.conference_url && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {errors.conferences[index].conference_url}
-                      </p>
-                    )}
-                    <Button
-                      type="button"
-                      onClick={() => removeConference(index)}
-                      className="text-white bg-red-500 hover:bg-red-600"
-                    >
-                      -
-                    </Button>
-                  </div>
+                  <>
+                    <div key={index} className="flex items-center mb-2">
+                      <Input
+                        value={conference.title}
+                        onChange={(e) =>
+                          handleConferenceChange(index, "title", e.target.value)
+                        }
+                        className={`flex-1 mr-2 ${
+                          errors.conferences?.[index]?.title
+                            ? "border-red-500"
+                            : ""
+                        }`}
+                        placeholder="Conference Title"
+                      />
+                      <Input
+                        value={conference.conference_url}
+                        onChange={(e) =>
+                          handleConferenceChange(
+                            index,
+                            "conference_url",
+                            e.target.value
+                          )
+                        }
+                        className={`flex-1 mr-2 ${
+                          errors.conferences?.[index]?.conference_url
+                            ? "border-red-500"
+                            : ""
+                        }`}
+                        placeholder="Conference URL"
+                      />
+
+                      <Button
+                        type="button"
+                        onClick={() => removeConference(index)}
+                        disabled={event.conferences.length === 1}
+                        className="text-white bg-red-500 hover:bg-red-600"
+                      >
+                        -
+                      </Button>
+                    </div>
+                    <div>
+                      {errors.conferences?.[`title-${index}`] && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.conferences?.[`title-${index}`]}
+                        </p>
+                      )}
+
+                      {errors.conferences?.[`conference_url-${index}`] && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.conferences?.[`conference_url-${index}`]}
+                        </p>
+                      )}
+                    </div>
+                  </>
                 ))}
                 <Button type="button" onClick={addConference} className="mt-2">
                   +

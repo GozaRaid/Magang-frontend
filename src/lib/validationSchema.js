@@ -27,6 +27,13 @@ export const aboutSectionSchema = z.object({
   who: z.string().min(1, "Who are required"),
 });
 
+export const aboutConferenceSection = z.object({
+  conferences: {
+    title: z.string().min(1, "Title are required"),
+    conference_url: z.string().url("Invalid URL"),
+  },
+});
+
 export const scheduleItemSchema = z.object({
   timestart: z
     .string()
@@ -68,10 +75,7 @@ export const speakersSectionSchema = z.object({
         (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
         "Only JPEG, PNG, and JPG images are allowed"
       ),
-    z
-      .string()
-      .url("Invalid image")
-      .or(z.string().min(1, "Image is required")),
+    z.string().url("Invalid image").or(z.string().min(1, "Image is required")),
   ]),
 });
 
