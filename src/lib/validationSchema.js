@@ -17,12 +17,12 @@ export const heroSectionSchema = z.object({
 
 export const aboutSectionSchema = z.object({
   about: z.string().min(1, "About are required"),
-  conferences: z.array(
-    z.object({
-      title: z.string().min(1, "Title are required"),
-      conference_url: z.string().url("Invalid URL"),
-    })
-  ),
+  // conferences: z.array(
+  //   z.object({
+  //     title: z.string().min(1, "Title are required"),
+  //     conference_url: z.string().url("Invalid URL"),
+  //   })
+  // ),
   where: z.string().min(1, "Where are required"),
   who: z.string().min(1, "Who are required"),
 });
